@@ -10,10 +10,16 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       token: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       expirationDate: {
+        allowNull: false,
         type: Sequelize.DATE
+      },
+      idUser: {
+        allowNull: false,
+        type : Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
