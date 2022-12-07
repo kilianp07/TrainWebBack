@@ -1,15 +1,15 @@
 const { Sequelize } = require('sequelize');
-
+const crypto = require('crypto'); 
 const sequelize = new Sequelize(
     "TrainWeb", 
-    "root", 
-    "root", 
+    "sammy", 
+    "password", 
     {dialect: "mysql", host: "127.0.0.1"});
 
 
 sequelize.authenticate();   
 console.log('Connecté à la base de données MySQL!');
-createUser();
+createUser("caca@jeanjean.laura", "123456", "jeanjean");
 getUsers();
 
 function getUsers() {
@@ -18,6 +18,17 @@ function getUsers() {
     });
 }
 
-function createUser() {
-    return sequelize.query("INSERT INTO `Users` (`id`, `email`, `password`, `username`) VALUES (NULL, 'kylian.peyron@ynov.com', 'Kylian_pyrn0912', 'Kylian Peyron');");
+function createUser(email, password, username) {
+    password = hashPassword(password);
+    return sequelize.query("INSERT INTO `Users` (`email`, `password`, `username`) VALUES ('" + email + "', '" + password + "', '" + username + "');");
 }
+
+function hashPassword(password) { 
+     
+    // Creating a unique salt for a particular user 
+       let salt = crypto.randomBytes(16).toString('hex'); 
+     
+    // Hashing user's salt and password with 1000 iterations, 
+    let hash = crypto.pbkdf2Sync(password, salt, 1000, 64, `sha512`).toString(`hex`); 
+    return hash;
+}; 
