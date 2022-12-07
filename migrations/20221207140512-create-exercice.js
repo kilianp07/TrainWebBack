@@ -10,13 +10,24 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       consigne: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       name: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       type: {
+        allowNull: false,
         type: Sequelize.STRING
+      },
+      idChapitre: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      },
+      idCreateur: {
+        allowNull: false,
+        type: Sequelize.INTEGER
       },
       answer: {
         allowNull: true,

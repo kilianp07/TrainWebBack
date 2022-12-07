@@ -17,6 +17,8 @@ module.exports = (sequelize, DataTypes) => {
     consigne: DataTypes.STRING,
     name: DataTypes.STRING,
     type: DataTypes.STRING,
+    idChapitre: DataTypes.INTEGER,
+    idCreateur: DataTypes.INTEGER,
     answer: DataTypes.STRING
   }, {
     sequelize,
