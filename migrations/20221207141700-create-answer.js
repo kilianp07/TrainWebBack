@@ -9,7 +9,16 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      idExercice: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      },
+      idUser: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      },
       value: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       suspended: {
@@ -17,6 +26,7 @@ module.exports = {
         type: Sequelize.BOOLEAN
       },
       status: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       createdAt: {

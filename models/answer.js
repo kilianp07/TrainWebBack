@@ -14,6 +14,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Answer.init({
+    idExercice: DataTypes.INTEGER,
+    idUser: DataTypes.INTEGER,
     value: DataTypes.STRING,
     suspended: DataTypes.BOOLEAN,
     status: DataTypes.STRING
