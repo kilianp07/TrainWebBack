@@ -10,7 +10,16 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       progress: {
+        allowNull: false,
         type: Sequelize.STRING
+      },
+      idUser: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      },
+      idFormation: {
+        allowNull: false,
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,

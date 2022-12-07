@@ -14,7 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   FormUserProgress.init({
-    progress: DataTypes.STRING
+    progress: DataTypes.STRING,
+    idUser: DataTypes.INTEGER,
+    idFormation: DataTypes.INTEGER
+
   }, {
     sequelize,
     modelName: 'FormUserProgress',
