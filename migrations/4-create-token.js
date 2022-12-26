@@ -2,20 +2,28 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Chapitres', {
+    await queryInterface.createTable('Tokens', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
+      token: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      idFormation: {
+      expirationDate: {
         allowNull: false,
-        type: Sequelize.INTEGER
+        type: Sequelize.DATE
+      },
+      idUser: {
+        allowNull: false,
+        type : Sequelize.INTEGER,
+        references: {
+          model: 'Users',
+          key: 'id'
+        }
       },
       createdAt: {
         allowNull: false,
@@ -28,6 +36,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Chapitres');
+    await queryInterface.dropTable('Tokens');
   }
 };

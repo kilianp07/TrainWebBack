@@ -11,6 +11,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      models.User.belongsTo(models.Role)//hasOne?
+      models.User.hasMany(models.Token)
+      models.User.hasMany(models.Logs)
+      models.User.hasMany(models.FormUserProgress)
+      models.User.hasMany(models.Exercice)
+      models.User.hasMany(models.Answer)
     }
   }
   User.init({

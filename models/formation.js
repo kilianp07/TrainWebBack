@@ -11,6 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      models.Formation.hasMany(models.FormUserProgress)
+      models.Formation.hasMany(models.Chapitre)
+
     }
   }
   Formation.init({

@@ -11,6 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      models.Chapitre.belongsTo(models.Formation)
+      models.Chapitre.hasMany(models.Exercice)
+
     }
   }
   Chapitre.init({

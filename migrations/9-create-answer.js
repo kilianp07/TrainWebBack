@@ -2,35 +2,39 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Exercices', {
+    await queryInterface.createTable('Answers', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      consigne: {
+      idExercice: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Exercices',
+          key: 'id'
+        }
+      },
+      idUser: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Users',
+          key: 'id'
+        }
+      },
+      value: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      name: {
-        allowNull: false,
-        type: Sequelize.STRING
+      suspended: {
+        allowNull : true,
+        type: Sequelize.BOOLEAN
       },
-      type: {
+      status: {
         allowNull: false,
-        type: Sequelize.STRING
-      },
-      idChapitre: {
-        allowNull: false,
-        type: Sequelize.INTEGER
-      },
-      idCreateur: {
-        allowNull: false,
-        type: Sequelize.INTEGER
-      },
-      answer: {
-        allowNull: true,
         type: Sequelize.STRING
       },
       createdAt: {
@@ -44,6 +48,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Exercices');
+    await queryInterface.dropTable('Answers');
   }
 };
