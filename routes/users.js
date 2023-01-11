@@ -43,7 +43,7 @@ router.post('/create', async(req,res,next) => {
       role: "USER"
    }
     const createdUser = await create(usr)
-    res.status(StatusCodes.CREATED).json({createdUser})
+    res.status(StatusCodes.CREATED).json({createdUser, message: "User created"})
 });
 
 module.exports = router;
