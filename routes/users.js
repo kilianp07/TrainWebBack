@@ -2,7 +2,7 @@ var express = require('express');
 const StatusCodes = require('http-status-codes');
 const bcrypt = require("bcrypt");
 const { Sequelize, Model, DataTypes } = require("sequelize");
-const sequelize = new Sequelize('database_development', 'root', '', 
+const sequelize = new Sequelize('database_development', process.env.DB_USER, process.env.DB_PASSWORD, 
   {
   dialect: 'mysql'
   }
