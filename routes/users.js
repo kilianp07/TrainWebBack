@@ -1,3 +1,4 @@
+require('dotenv').config()
 var express = require('express');
 const StatusCodes = require('http-status-codes');
 const bcrypt = require("bcrypt");
