@@ -1,26 +1,47 @@
 var express = require('express');
 const StatusCodes = require('http-status-codes');
+const bcrypt = require("bcrypt");
+const { Sequelize, Model, DataTypes } = require("sequelize");
+const sequelize = new Sequelize('database_development', 'root', '', 
+  {
+  dialect: 'mysql'
+  }
+)
+const User = require('../models/user')(sequelize, Sequelize.DataTypes,Sequelize.Model);
+const Role = require('../models/role')(sequelize, Sequelize.DataTypes,Sequelize.Model);
+
 var router = express.Router();
+sequelize.authenticate()
+const create = async (usr) => {
+  try {
+  const createdUser = await User.create(usr)
+  } catch (error) {
+  console.log(error)
+  }
+};
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
-router.post('/api/createUser', async(req,res,next) => {
+router.post('/create', async(req,res,next) => {
    const salt = await bcrypt.genSalt(10);
-   if (req.email == undefined || req.username == undefined || req.password == undefined) {
-      res.status(StatusCodes.BAD_REQUEST).json({message: "Bad request"})
+
+   if (req.body.email == null || req.body.username == null || req.body.password == null) {
+      res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
+      console.log(req.body.email)
+      return
     }
+  
    var usr = {
       email: req.body.email,
       username: req.body.username,
       password: await bcrypt.hash(req.body.password, salt),
       emailVerified: false,
-      // TODO: know which role to assign
-      idRole: 1
+      role: "USER"
    }
-    createdUser = user.create(usr)
+    const createdUser = await create(usr)
     res.status(StatusCodes.CREATED).json({createdUser})
 });
 
