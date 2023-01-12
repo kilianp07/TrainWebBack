@@ -2,13 +2,16 @@ require('dotenv').config()
 var express = require('express');
 const StatusCodes = require('http-status-codes');
 const bcrypt = require("bcrypt");
-const { Sequelize, Model, DataTypes } = require("sequelize");
+const { Sequelize, Model, DataTypes, TimeoutError } = require("sequelize");
+const jwt = require('jsonwebtoken');
 const sequelize = new Sequelize('database_development', process.env.DB_USER, process.env.DB_PASSWORD, 
   {
   dialect: 'mysql'
   }
 )
 const User = require('../models/user')(sequelize, Sequelize.DataTypes,Sequelize.Model);
+const Token = require('../models/token')(sequelize, Sequelize.DataTypes,Sequelize.Model);
+
 
 var router = express.Router();
 sequelize.authenticate()
@@ -68,14 +71,23 @@ router.post('/login', async(req,res,next) => {
     res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
     return
   }
+  
   const user = await User.findOne({ where: { username: req.body.username } })
   if (user == null) {
     res.status(StatusCodes.BAD_REQUEST).json({ message: "User not found"})
     return
   }
+  
   const validPassword = await bcrypt.compare(req.body.password, user.password)
   if (validPassword) {
-    res.status(StatusCodes.OK).json({user, message: "User logged in"})
+    var token = {
+      token: jwt.sign({id: user.id, email: user.email, username: user.username, role: user.role}, process.env.SECRET_KEY, {expiresIn: "1h"}),
+      expirationDate: Date.now() + 3600000,
+      idUser: user.id
+    }
+    const createdToken = await Token.create(token)
+    res.status(StatusCodes.OK).json({createdToken})
+
     return
   }
   res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid password"})
