@@ -22,5 +22,6 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Token',
   });
+
   return Token;
 };

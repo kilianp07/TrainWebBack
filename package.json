@@ -1,20 +1,22 @@
 {
-  "name": "API_BACK",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "trainwebback",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^18.11.9",
-    "typescript": "^4.9.3"
+    "start": "node ./bin/www"
   },
   "dependencies": {
-    "mysql": "^2.18.1",
-    "sequelize": "^6.26.0"
+    "bcrypt": "^5.1.0",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "dotenv": "^16.0.3",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "http-status-codes": "^2.2.0",
+    "jade": "~1.11.0",
+    "jsonwebtoken": "^9.0.0",
+    "morgan": "~1.9.1",
+    "mysql2": "^2.3.3",
+    "sequelize": "^6.28.0"
   }
 }
