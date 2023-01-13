@@ -15,15 +15,7 @@ const Token = require('../models/token')(sequelize, Sequelize.DataTypes,Sequeliz
 
 var router = express.Router();
 sequelize.authenticate()
-const create = async (usr) => {
-  try {
-  const createdUser = await User.create(usr)
-  } catch (error) {
-  console.log(error)
-  }
-};
 
-/* GET users listing. */
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
