@@ -29,12 +29,24 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/student/create', async(req,res,next) => {
-   const salt = await bcrypt.genSalt(10);
 
-   if (req.body.email == null || req.body.username == null || req.body.password == null) {
-      res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
-      return
-    }
+  var user = await User.findOne({ where: {email: req.body.email } })
+  if (user != null) {
+    res.status(StatusCodes.BAD_REQUEST).json({ message: "Email is already used"})
+    return
+  }
+  user = await User.findOne({ where: {username: req.body.username } })
+  if (user != null) {
+    res.status(StatusCodes.BAD_REQUEST).json({ message: "Username is already used"})
+    return
+  }
+
+  const salt = await bcrypt.genSalt(10);
+
+  if (req.body.email == null || req.body.username == null || req.body.password == null) {
+    res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
+    return
+  }
   
    var usr = {
       email: req.body.email,
@@ -72,7 +84,7 @@ router.post('/login', async(req,res,next) => {
     return
   }
   
-  const user = await User.findOne({ where: { username: req.body.username } })
+  const user = await User.findOne({ where: {username: req.body.username } })
   if (user == null) {
     res.status(StatusCodes.BAD_REQUEST).json({ message: "User not found"})
     return
@@ -82,7 +94,7 @@ router.post('/login', async(req,res,next) => {
   if (validPassword) {
     var token = {
       token: jwt.sign({id: user.id, email: user.email, username: user.username, role: user.role}, process.env.SECRET_KEY, {expiresIn: "1h"}),
-      expirationDate: Date.now() + 3600000,
+      expirationDate: Date.now() + 3600,
       idUser: user.id
     }
     const createdToken = await Token.create(token)
@@ -93,4 +105,28 @@ router.post('/login', async(req,res,next) => {
   res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid password"})
 });
 
+router.post('/update', async(req,res,next) => {
+  
+  const token = await Token.findOne({ where: { token: req.body.token.token } })
+  if (token == null) {
+    res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid token"})
+    return
+  }
+
+  try{
+    jwt.verify(req.body.token.token, process.env.SECRET_KEY)
+  }catch(err){
+    res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid token"})
+    return
+  }
+
+  userToUpdate = await User.findOne({ where: { id: token.idUser } })
+  if (userToUpdate == null) {
+    res.status(StatusCodes.BAD_REQUEST).json({message: "User not found"})
+    return
+  }
+  
+  User.findAll
+
+});
 module.exports = router;
