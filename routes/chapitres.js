@@ -39,7 +39,6 @@ const create = async (chapter) => {
 // });
 
 router.post('/create', async(req,res,next) => {
-  console.log(req.body)
   if (req.body.name == null || req.body.idformation == null) {
      res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
      return
