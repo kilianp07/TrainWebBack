@@ -31,15 +31,17 @@ router.get('/', function(req, res, next) {
 router.post('/student/create', async(req,res,next) => {
    const salt = await bcrypt.genSalt(10);
 
-   if (req.body.email == null || req.body.username == null || req.body.password == null) {
+   const incomingUser = req.body.user
+
+   if (incomingUser.email == null || incomingUser.username == null || incomingUser.password == null) {
       res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
       return
     }
   
    var usr = {
-      email: req.body.email,
-      username: req.body.username,
-      password: await bcrypt.hash(req.body.password, salt),
+      email: incomingUser.email,
+      username: incomingUser.username,
+      password: await bcrypt.hash(incomingUser.password, salt),
       emailVerified: false,
       role: "USER"
    }
@@ -49,16 +51,17 @@ router.post('/student/create', async(req,res,next) => {
 
 router.post('/teacher/create', async(req,res,next) => {
     const salt = await bcrypt.genSalt(10);
+    const incomingUser = req.body.user
 
-    if (req.body.email == null || req.body.username == null || req.body.password == null) {
+    if (incomingUser.email == null || incomingUserusername == null || incomingUser.password == null) {
       res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
       return
     }
 
     var usr = {
-      email: req.body.email,
-      username: req.body.username,
-      password: await bcrypt.hash(req.body.password, salt),
+      email: incomingUser.email,
+      username: incomingUser.username,
+      password: await bcrypt.hash(incomingUser.password, salt),
       emailVerified: false,
       role: "TEACHER"
     }
@@ -67,18 +70,21 @@ router.post('/teacher/create', async(req,res,next) => {
 });
 
 router.post('/login', async(req,res,next) => {
-  if (req.body.username == null || req.body.password == null) {
+
+  const incomingUser = req.body.user
+
+  if (incomingUser.username == null || incomingUser.password == null) {
     res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
     return
   }
   
-  const user = await User.findOne({ where: { username: req.body.username } })
+  const user = await User.findOne({ where: { username: incomingUser.username } })
   if (user == null) {
     res.status(StatusCodes.BAD_REQUEST).json({ message: "User not found"})
     return
   }
   
-  const validPassword = await bcrypt.compare(req.body.password, user.password)
+  const validPassword = await bcrypt.compare(incomingUser.password, user.password)
   if (validPassword) {
     var token = {
       token: jwt.sign({id: user.id, email: user.email, username: user.username, role: user.role}, process.env.SECRET_KEY, {expiresIn: "1h"}),
