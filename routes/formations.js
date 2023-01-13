@@ -25,8 +25,7 @@ router.get('/getall', async(req, res, next) => {
       return;
     }
 
-    res.status(StatusCodes.OK).json(JSON.stringify(formations, null, 2))
-    return formations;
+    res.status(StatusCodes.OK).json(formations)
 });
 
 router.post('/create', async(req,res,next) => {

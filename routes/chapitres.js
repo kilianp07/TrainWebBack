@@ -35,8 +35,7 @@ const create = async (chapter) => {
 //       // chapter["exercices"] = exercices;
 //       // console.log(chapter["exercices"], "exercice")
 //     });
-//     res.status(StatusCodes.OK).json(JSON.stringify(chapitres, null, 2))
-//     return chapitres;
+//     res.status(StatusCodes.OK).json(chapitres)
 // });
 
 router.post('/create', async(req,res,next) => {
@@ -53,7 +52,7 @@ router.post('/create', async(req,res,next) => {
      UpdatedAt: Date.now()
   }
    const createdChapitre = await create(newChapitre)
-   res.status(StatusCodes.CREATED).json({createdChapitre, message: "Chapitre created"})
+   res.status(StatusCodes.CREATED).json({createdChapitre, message: "Chapter created"})
 });
 
 module.exports = router;
