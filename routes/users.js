@@ -15,21 +15,14 @@ const Token = require('../models/token')(sequelize, Sequelize.DataTypes,Sequeliz
 
 var router = express.Router();
 sequelize.authenticate()
-const create = async (usr) => {
-  try {
-  const createdUser = await User.create(usr)
-  } catch (error) {
-  console.log(error)
-  }
-};
 
-/* GET users listing. */
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
 router.post('/student/create', async(req,res,next) => {
    const salt = await bcrypt.genSalt(10);
+   const incomingUser = req.body.user
 
    const incomingUser = req.body.user
 
@@ -38,6 +31,17 @@ router.post('/student/create', async(req,res,next) => {
       return
     }
   
+    var user = await User.findOne({ where: {email: incomingUser.email } })
+   if (user != null) {
+     res.status(StatusCodes.BAD_REQUEST).json({ message: "Email is already used"})
+     return
+   }
+   user = await User.findOne({ where: {username: incomingUser.username } })
+   if (user != null) {
+     res.status(StatusCodes.BAD_REQUEST).json({ message: "Username is already used"})
+     return
+   }
+
    var usr = {
       email: incomingUser.email,
       username: incomingUser.username,
@@ -57,6 +61,17 @@ router.post('/teacher/create', async(req,res,next) => {
       res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
       return
     }
+
+    var user = await User.findOne({ where: {email: incomingUser.email } })
+   if (user != null) {
+     res.status(StatusCodes.BAD_REQUEST).json({ message: "Email is already used"})
+     return
+   }
+   user = await User.findOne({ where: {username: incomingUser.username } })
+   if (user != null) {
+     res.status(StatusCodes.BAD_REQUEST).json({ message: "Username is already used"})
+     return
+   }
 
     var usr = {
       email: incomingUser.email,
@@ -99,4 +114,58 @@ router.post('/login', async(req,res,next) => {
   res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid password"})
 });
 
+router.post('/update', async(req,res,next) => {
+  
+  const incomingUser = req.body.user
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  // If token doesn't exists
+  console.log(req.headers["authorization"]&& req.headers["authorization"].split(' ')[1])
+  const token = await Token.findOne({ where: { token: incomingToken } })
+  if (token == null) {
+    res.status(StatusCodes.BAD_REQUEST).json({message: "Token not found"})
+    return
+  }
+
+  // If token is expired
+  try{
+    jwt.verify(incomingToken, process.env.SECRET_KEY)
+  }catch(err){
+    res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid token"})
+    return
+  }
+
+  // If user related to token doesn't exists
+  userToUpdate = await User.findOne({ where: { id: token.idUser } })
+  if (userToUpdate == null) {
+    res.status(StatusCodes.BAD_REQUEST).json({message: "User not found"})
+    return
+  }
+  
+  // If email is already used
+  User.findAll({ where: { email: incomingUser.email } }).then(users => {
+    if (users.length > 1) {
+      res.status(StatusCodes.BAD_REQUEST).json({message: "Email is already used"})
+      return
+    }
+  })
+
+  // If username is already used
+  User.findAll({ where: { username:incomingUser.username } }).then(users => {
+    if (users.length > 1) {
+      res.status(StatusCodes.BAD_REQUEST).json({message: "Username is already used"})
+      return
+    }
+  })
+
+  // Update the user
+  userToUpdate.email = incomingUser.email
+  userToUpdate.username = incomingUser.username
+  userToUpdate.password = incomingUser.password
+  userToUpdate.role = incomingUser.role
+
+  userToUpdate.save()
+  res.status(StatusCodes.OK).json({user: userToUpdate, message: "User updated"})
+
+});
 module.exports = router;
