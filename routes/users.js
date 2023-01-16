@@ -24,6 +24,8 @@ router.post('/student/create', async(req,res,next) => {
    const salt = await bcrypt.genSalt(10);
    const incomingUser = req.body.user
 
+   const incomingUser = req.body.user
+
    if (incomingUser.email == null || incomingUser.username == null || incomingUser.password == null) {
       res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
       return
