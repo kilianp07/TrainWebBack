@@ -107,26 +107,56 @@ router.post('/login', async(req,res,next) => {
 
 router.post('/update', async(req,res,next) => {
   
-  const token = await Token.findOne({ where: { token: req.body.token.token } })
+  const incomingUser = req.body.user
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  // If token doesn't exists
+  console.log(req.headers["authorization"]&& req.headers["authorization"].split(' ')[1])
+  const token = await Token.findOne({ where: { token: incomingToken } })
   if (token == null) {
-    res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid token"})
+    res.status(StatusCodes.BAD_REQUEST).json({message: "Token not found"})
     return
   }
 
+  // If token is expired
   try{
-    jwt.verify(req.body.token.token, process.env.SECRET_KEY)
+    jwt.verify(incomingToken, process.env.SECRET_KEY)
   }catch(err){
     res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid token"})
     return
   }
 
+  // If user related to token doesn't exists
   userToUpdate = await User.findOne({ where: { id: token.idUser } })
   if (userToUpdate == null) {
     res.status(StatusCodes.BAD_REQUEST).json({message: "User not found"})
     return
   }
   
-  User.findAll
+  // If email is already used
+  User.findAll({ where: { email: incomingUser.email } }).then(users => {
+    if (users.length > 1) {
+      res.status(StatusCodes.BAD_REQUEST).json({message: "Email is already used"})
+      return
+    }
+  })
+
+  // If username is already used
+  User.findAll({ where: { username:incomingUser.username } }).then(users => {
+    if (users.length > 1) {
+      res.status(StatusCodes.BAD_REQUEST).json({message: "Username is already used"})
+      return
+    }
+  })
+
+  // Update the user
+  userToUpdate.email = incomingUser.email
+  userToUpdate.username = incomingUser.username
+  userToUpdate.password = incomingUser.password
+  userToUpdate.role = incomingUser.role
+
+  userToUpdate.save()
+  res.status(StatusCodes.OK).json({user: userToUpdate, message: "User updated"})
 
 });
 module.exports = router;
