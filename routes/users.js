@@ -21,20 +21,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/student/create', async(req,res,next) => {
-
-  var user = await User.findOne({ where: {email: req.body.email } })
-  if (user != null) {
-    res.status(StatusCodes.BAD_REQUEST).json({ message: "Email is already used"})
-    return
-  }
-  user = await User.findOne({ where: {username: req.body.username } })
-  if (user != null) {
-    res.status(StatusCodes.BAD_REQUEST).json({ message: "Username is already used"})
-    return
-  }
-
-  const salt = await bcrypt.genSalt(10);
-
+   const salt = await bcrypt.genSalt(10);
    const incomingUser = req.body.user
 
    if (incomingUser.email == null || incomingUser.username == null || incomingUser.password == null) {
@@ -42,6 +29,17 @@ router.post('/student/create', async(req,res,next) => {
       return
     }
   
+    var user = await User.findOne({ where: {email: incomingUser.email } })
+   if (user != null) {
+     res.status(StatusCodes.BAD_REQUEST).json({ message: "Email is already used"})
+     return
+   }
+   user = await User.findOne({ where: {username: incomingUser.username } })
+   if (user != null) {
+     res.status(StatusCodes.BAD_REQUEST).json({ message: "Username is already used"})
+     return
+   }
+
    var usr = {
       email: incomingUser.email,
       username: incomingUser.username,
@@ -61,6 +59,17 @@ router.post('/teacher/create', async(req,res,next) => {
       res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
       return
     }
+
+    var user = await User.findOne({ where: {email: incomingUser.email } })
+   if (user != null) {
+     res.status(StatusCodes.BAD_REQUEST).json({ message: "Email is already used"})
+     return
+   }
+   user = await User.findOne({ where: {username: incomingUser.username } })
+   if (user != null) {
+     res.status(StatusCodes.BAD_REQUEST).json({ message: "Username is already used"})
+     return
+   }
 
     var usr = {
       email: incomingUser.email,
@@ -92,7 +101,7 @@ router.post('/login', async(req,res,next) => {
   if (validPassword) {
     var token = {
       token: jwt.sign({id: user.id, email: user.email, username: user.username, role: user.role}, process.env.SECRET_KEY, {expiresIn: "1h"}),
-      expirationDate: Date.now() + 3600,
+      expirationDate: Date.now() + 3600000,
       idUser: user.id
     }
     const createdToken = await Token.create(token)
