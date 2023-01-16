@@ -24,8 +24,6 @@ router.post('/student/create', async(req,res,next) => {
    const salt = await bcrypt.genSalt(10);
    const incomingUser = req.body.user
 
-   const incomingUser = req.body.user
-
    if (incomingUser.email == null || incomingUser.username == null || incomingUser.password == null) {
       res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
       return
@@ -47,9 +45,9 @@ router.post('/student/create', async(req,res,next) => {
       username: incomingUser.username,
       password: await bcrypt.hash(incomingUser.password, salt),
       emailVerified: false,
-      role: "USER"
+      role: "STUDENT"
    }
-    const createdUser = await create(usr)
+    const createdUser = await User.create(usr)
     res.status(StatusCodes.CREATED).json({createdUser, message: "User created"})
 });
 
@@ -80,7 +78,7 @@ router.post('/teacher/create', async(req,res,next) => {
       emailVerified: false,
       role: "TEACHER"
     }
-    const createdUser = await create(usr)
+    const createdUser = await User.create(usr)
     res.status(StatusCodes.CREATED).json({createdUser, message: "User created"})
 });
 
@@ -100,21 +98,22 @@ router.post('/login', async(req,res,next) => {
   }
   
   const validPassword = await bcrypt.compare(incomingUser.password, user.password)
-  if (validPassword) {
-    var token = {
-      token: jwt.sign({id: user.id, email: user.email, username: user.username, role: user.role}, process.env.SECRET_KEY, {expiresIn: "1h"}),
-      expirationDate: Date.now() + 3600000,
-      idUser: user.id
-    }
-    const createdToken = await Token.create(token)
-    res.status(StatusCodes.OK).json({createdToken})
-
+  if (!validPassword) {
+    res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid password"})
     return
   }
-  res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid password"})
+
+  var token = {
+    token: jwt.sign({id: user.id, email: user.email, username: user.username, role: user.role}, process.env.SECRET_KEY, {expiresIn: "1h"}),
+    expirationDate: Date.now() + 3600000,
+    idUser: user.id
+  }
+  const createdToken = await Token.create(token)
+  res.status(StatusCodes.OK).json({createdToken})
+  
 });
 
-router.post('/update', async(req,res,next) => {
+router.put('/update', async(req,res,next) => {
   
   const incomingUser = req.body.user
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
@@ -159,9 +158,10 @@ router.post('/update', async(req,res,next) => {
   })
 
   // Update the user
+  const salt = await bcrypt.genSalt(10);
   userToUpdate.email = incomingUser.email
   userToUpdate.username = incomingUser.username
-  userToUpdate.password = incomingUser.password
+  userToUpdate.password = await bcrypt.hash(incomingUser.password, salt)
   userToUpdate.role = incomingUser.role
 
   userToUpdate.save()
