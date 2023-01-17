@@ -3,7 +3,7 @@
 ### Register
 To register a student:
 ```bash
-POST /user/student/create
+POST /users/student/create
 ```
 ```json
 {
@@ -51,7 +51,7 @@ If the POST request is correct you will receive the following response :
 ````
 To register a teacher:
 ```bash
-POST /user/teacher/create
+POST /users/teacher/create
 ```
 To register a teacher you need to do it with an admin or a teacher account. 
 ```json
@@ -102,7 +102,7 @@ If the POST request is correct you will receive the following response :
 ### Login
 To login a user:
 ```bash
-POST /user/login
+POST /users/login
 ```
 ```json
 {
@@ -148,7 +148,7 @@ Possibles errors:
 To update a user: \
 In the header of the request place your token in the "authorization" field.
 ```bash
-PUT /user/update
+PUT /users/update
 ```
 ```json
 {

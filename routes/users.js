@@ -3,7 +3,6 @@ var express = require('express');
 const StatusCodes = require('http-status-codes');
 const bcrypt = require("bcrypt");
 const { Sequelize, Model, DataTypes, TimeoutError } = require("sequelize");
-const token = require('../models/token');
 const sequelize = new Sequelize('database_development', process.env.DB_USER, process.env.DB_PASSWORD, 
   {
   dialect: 'mysql'

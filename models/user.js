@@ -70,7 +70,7 @@ module.exports = (sequelize, DataTypes) => {
 
     // Update the user
     const salt = await bcrypt.genSalt(10);
-    userToUpdate = await User.findOne({ where: { id: userId } })
+    var userToUpdate = await User.findOne({ where: { id: userId } })
     if (userToUpdate == null) {
       throw new Error("User not found")
     }
