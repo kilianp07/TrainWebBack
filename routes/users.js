@@ -3,6 +3,7 @@ var express = require('express');
 const StatusCodes = require('http-status-codes');
 const bcrypt = require("bcrypt");
 const { Sequelize, Model, DataTypes, TimeoutError } = require("sequelize");
+const token = require('../models/token');
 const sequelize = new Sequelize('database_development', process.env.DB_USER, process.env.DB_PASSWORD, 
   {
   dialect: 'mysql'
@@ -52,6 +53,30 @@ router.post('/student/create', async(req,res,next) => {
 });
 
 router.post('/teacher/create', async(req,res,next) => {
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if(!Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.UNAUTHORIZED).json({message: "You must be connected"})
+    return
+  }
+
+  if(!Token.verifyToken(incomingToken)) {
+    res.status(StatusCodes.UNAUTHORIZED).json({message: "You must be connected"})
+    return
+  }
+  
+  token = await Token.findOne({ where: { token: incomingToken } })
+  if(!User.userExists(token.idUser, "id")) {
+    res.status(StatusCodes.UNAUTHORIZED).json({message: "Unrecognized user"})
+    return
+  }
+
+    const user = await User.findOne({ where: { id: token.idUser } })
+    if(user.role != "ADMIN" || user.role != "TEACHER") {
+      res.status(StatusCodes.UNAUTHORIZED).json({message: "You must be an admin or a teacher to create a teacher"})
+      return
+    }
+
     const salt = await bcrypt.genSalt(10);
     const incomingUser = req.body.user
 

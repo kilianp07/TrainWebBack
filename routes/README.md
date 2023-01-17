@@ -7,9 +7,11 @@ POST /user/student/create
 ```
 ```json
 {
-    "username": "John Doe",
-    "email": "johndoe@mail.com",
-    "password": "password"
+    "user":{
+        "username": "John Doe",
+        "email": "johndoe@mail.com",
+        "password": "password"
+    }
 }
 ```
 All the keys must be filled or the server will return a 400 HTTP code with the following message:
@@ -47,6 +49,56 @@ If the POST request is correct you will receive the following response :
     "message": "User created"
 }
 ````
+To register a teacher:
+```bash
+POST /user/teacher/create
+```
+To register a teacher you need to do it with an admin or a teacher account. 
+```json
+{
+    "user":{
+        "username": "John Doe",
+        "email": "johndoe@mail.com",
+        "password": "password"
+    },
+    "token": "token"
+}
+```
+All the keys must be filled or the server will return a 400 HTTP code with the following message:
+```json
+{
+    "message": "Missing parameters"
+}
+```
+\
+If the mail or the username are already used by another user, the server will return 400 HTTP error code with the following message:
+```json
+{
+    "message": "Username is already used"
+}
+```
+```json
+{
+    "message": "Email is already used"
+}
+```
+
+If the POST request is correct you will receive the following response :
+```json
+{
+    "createdUser": {
+        "id": 2,
+        "email": "johndoe@mail.com",
+        "username": "John Doe",
+        "password": "hashedPassword",
+        "emailVerified": false,
+        "role": "Teacher",
+        "updatedAt": "2023-01-16T10:53:14.332Z",
+        "createdAt": "2023-01-16T10:53:14.332Z"
+    },
+    "message": "User created"
+}
+````
 ### Login
 To login a user:
 ```bash
@@ -54,8 +106,10 @@ POST /user/login
 ```
 ```json
 {
-    "email": "johndoe@mail.com",
-    "password": "password"
+    "user":{
+        "email": "johndoe@mail.com",
+        "password": "password"
+    }
 }
 ```
 
@@ -98,10 +152,12 @@ PUT /user/update
 ```
 ```json
 {
-    "username": "John Doe",
-    "email": "johndoe2@mail.com",
-    "password": "Newpassword",
-    "role": "TEACHER"
+    "user": {
+        "username": "John Doe",
+        "email": "johndoe2@mail.com",
+        "password": "Newpassword",
+        "role": "TEACHER"
+    }
 }
 ```
 All the keys are required, you can't update only one of them.
