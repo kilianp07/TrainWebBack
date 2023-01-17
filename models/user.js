@@ -3,6 +3,7 @@ const {
   Model,
   DataTypes
 } = require('sequelize');
+const bcrypt = require("bcrypt");
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -29,6 +30,59 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'User',
   });
+
+  User.userExists = async function(valueToTest, keyToTest) {
+    let user
+    switch (keyToTest) {
+      case "email":
+        user = await User.findOne({ where: {email: valueToTest }})
+        break
+      case "username":
+        user = await User.findOne({where: {username: valueToTest }})
+        break
+      case "id":
+        user = await User.findOne({where: {id: valueToTest }})
+        break
+      default:
+        return
+    }
+    return user != null
+  }
+
+  User.incomingCorrectlyFilled = function(incomingUser) {
+    return incomingUser.email != null && incomingUser.username != null && incomingUser.password != null
+  }
+
+  User.updateUser = async function(incomingUser, userId) {
+    // If email is already used
+    User.findAll({ where: { email: incomingUser.email } }).then(users => {
+      if (users.length > 1) {
+        throw new Error("Email is already used")
+      }
+    })
+
+    // If username is already used
+    User.findAll({ where: { username:incomingUser.username } }).then(users => {
+      if (users.length > 1) {
+        throw new Error("Username is already used")
+      }
+    })
+
+    // Update the user
+    const salt = await bcrypt.genSalt(10);
+    userToUpdate = await User.findOne({ where: { id: userId } })
+    if (userToUpdate == null) {
+      throw new Error("User not found")
+    }
+    userToUpdate.email = incomingUser.email
+    userToUpdate.username = incomingUser.username
+    userToUpdate.password = await bcrypt.hash(incomingUser.password, salt)
+    userToUpdate.role = incomingUser.role
+    userToUpdate.save()
+
+    return userToUpdate
+  }
+
   return User;
 };
 
