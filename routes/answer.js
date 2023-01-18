@@ -36,5 +36,15 @@ router.post('/create', async(req,res,next) => {
      res.status(StatusCodes.CREATED).json({createdAnswer, message: "Answer created"})
 });
 
+router.delete('/delete/:id', async(req, res, next) => {
+    const id = req.params.id;
+    const answer = await Answer.findOne({where: {id: id}});
+    if(answer == null) {
+      res.status(StatusCodes.NOT_FOUND).json({message: "Answer not found"})
+      return};
+    await Answer.destroy({where: {id: id}});
+    res.status(StatusCodes.OK).json({message: "Answer deleted"});
+});
+
 
 module.exports = router;
