@@ -21,5 +21,11 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Logs',
   });
+
+  Logs.incomingCorrectlyFilled = (incomingLogs)=>{
+    return incomingLogs.value != null &&
+    incomingLogs.idUser != null
+  }
+
   return Logs;
 };
