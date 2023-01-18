@@ -3,7 +3,6 @@ var express = require('express');
 const StatusCodes = require('http-status-codes');
 const bcrypt = require("bcrypt");
 const { Sequelize, Model, DataTypes, TimeoutError } = require("sequelize");
-const jwt = require('jsonwebtoken');
 const sequelize = new Sequelize('database_development', process.env.DB_USER, process.env.DB_PASSWORD, 
   {
   dialect: 'mysql'
@@ -24,53 +23,79 @@ router.post('/student/create', async(req,res,next) => {
    const salt = await bcrypt.genSalt(10);
    const incomingUser = req.body.user
 
-   if (incomingUser.email == null || incomingUser.username == null || incomingUser.password == null) {
+   // Check if all parameters are filled
+   if (!User.incomingCorrectlyFilled(incomingUser)) {
       res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
       return
     }
   
-    var user = await User.findOne({ where: {email: incomingUser.email } })
-   if (user != null) {
-     res.status(StatusCodes.BAD_REQUEST).json({ message: "Email is already used"})
-     return
-   }
-   user = await User.findOne({ where: {username: incomingUser.username } })
-   if (user != null) {
-     res.status(StatusCodes.BAD_REQUEST).json({ message: "Username is already used"})
-     return
-   }
-
-   var usr = {
+    // Check if user already exists
+    if (await User.userExists(incomingUser.email, "email")) {
+      res.status(StatusCodes.BAD_REQUEST).json({ message: "Email is already used"})
+      return
+    }
+    if (await User.userExists(incomingUser.username, "username")) {
+      res.status(StatusCodes.BAD_REQUEST).json({ message: "Username is already used"})
+      return
+    }
+  
+    // Create user
+    var usr = {
       email: incomingUser.email,
       username: incomingUser.username,
       password: await bcrypt.hash(incomingUser.password, salt),
       emailVerified: false,
       role: "STUDENT"
-   }
+    }
     const createdUser = await User.create(usr)
     res.status(StatusCodes.CREATED).json({createdUser, message: "User created"})
 });
 
 router.post('/teacher/create', async(req,res,next) => {
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if(!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.UNAUTHORIZED).json({message: "You must be connected"})
+    return
+  }
+
+  if(!await Token.verifyToken(incomingToken)) {
+    res.status(StatusCodes.UNAUTHORIZED).json({message: "You must be connected"})
+    return
+  }
+  
+  token = await Token.findOne({ where: { token: incomingToken } })
+  if(!await User.userExists(token.idUser, "id")) {
+    res.status(StatusCodes.UNAUTHORIZED).json({message: "Unrecognized user"})
+    return
+  }
+
+    const user = await User.findOne({ where: { id: token.idUser } })
+    if(user.role != "ADMIN" || user.role != "TEACHER") {
+      res.status(StatusCodes.UNAUTHORIZED).json({message: "You must be an admin or a teacher to create a teacher"})
+      return
+    }
+
     const salt = await bcrypt.genSalt(10);
     const incomingUser = req.body.user
 
-    if (incomingUser.email == null || incomingUserusername == null || incomingUser.password == null) {
+    // Check if all parameters are filled
+    if(!User.incomingCorrectlyFilled(incomingUser)) {
       res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
       return
     }
 
-    var user = await User.findOne({ where: {email: incomingUser.email } })
-   if (user != null) {
-     res.status(StatusCodes.BAD_REQUEST).json({ message: "Email is already used"})
-     return
-   }
-   user = await User.findOne({ where: {username: incomingUser.username } })
-   if (user != null) {
-     res.status(StatusCodes.BAD_REQUEST).json({ message: "Username is already used"})
-     return
-   }
+    // Check if user already exists
+    if (await User.userExists(incomingUser.email, "email")) {
+      res.status(StatusCodes.BAD_REQUEST).json({ message: "Email is already used"})
+      return
+    }
+    if (await User.userExists(incomingUser.username, "username")) {
+      res.status(StatusCodes.BAD_REQUEST).json({ message: "Username is already used"})
+      return
+    }
 
+    // Create user
     var usr = {
       email: incomingUser.email,
       username: incomingUser.username,
@@ -83,89 +108,73 @@ router.post('/teacher/create', async(req,res,next) => {
 });
 
 router.post('/login', async(req,res,next) => {
-
   const incomingUser = req.body.user
+  
+  if(!await User.userExists(incomingUser.email, "email") && !await User.userExists(incomingUser.username, "username")) {
+    res.status(StatusCodes.BAD_REQUEST).json({message: "User not found"})
+    return
+  }
 
-  if (incomingUser.username == null || incomingUser.password == null) {
-    res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
-    return
+  let user
+  switch(true)  {
+    case await User.userExists(incomingUser.email, "email") && incomingUser.password != null:
+      user = await User.findOne({ where: { email: incomingUser.email } })
+      break;
+    case await User.userExists(incomingUser.username, "username") && incomingUser.password != null:
+      user = await User.findOne({ where: { username: incomingUser.username } })
+      break;
+    default:
+      res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid entry"})
+      return
   }
-  
-  const user = await User.findOne({ where: { username: incomingUser.username } })
-  if (user == null) {
-    res.status(StatusCodes.BAD_REQUEST).json({ message: "User not found"})
-    return
-  }
-  
+
   const validPassword = await bcrypt.compare(incomingUser.password, user.password)
   if (!validPassword) {
     res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid password"})
     return
   }
 
-  var token = {
-    token: jwt.sign({id: user.id, email: user.email, username: user.username, role: user.role}, process.env.SECRET_KEY, {expiresIn: "1h"}),
-    expirationDate: Date.now() + 3600000,
-    idUser: user.id
-  }
-  const createdToken = await Token.create(token)
-  res.status(StatusCodes.OK).json({createdToken})
-  
+  // Create token
+  const createdToken = await Token.generate(user.id)
+  res.status(StatusCodes.OK).json({createdToken, message: "User logged in"})
 });
 
 router.put('/update', async(req,res,next) => {
-  
+
   const incomingUser = req.body.user
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
-  // If token doesn't exists
-  console.log(req.headers["authorization"]&& req.headers["authorization"].split(' ')[1])
-  const token = await Token.findOne({ where: { token: incomingToken } })
-  if (token == null) {
+  if (!await Token.tokenExists(incomingToken)) {
     res.status(StatusCodes.BAD_REQUEST).json({message: "Token not found"})
     return
   }
 
-  // If token is expired
-  try{
-    jwt.verify(incomingToken, process.env.SECRET_KEY)
-  }catch(err){
+  if(!await Token.verify(incomingToken)){
     res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid token"})
     return
   }
 
-  // If user related to token doesn't exists
-  userToUpdate = await User.findOne({ where: { id: token.idUser } })
-  if (userToUpdate == null) {
-    res.status(StatusCodes.BAD_REQUEST).json({message: "User not found"})
+  if(!User.incomingCorrectlyFilled(incomingUser) && incomingUser.role == null) {
+    res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
     return
   }
   
-  // If email is already used
-  User.findAll({ where: { email: incomingUser.email } }).then(users => {
-    if (users.length > 1) {
-      res.status(StatusCodes.BAD_REQUEST).json({message: "Email is already used"})
-      return
-    }
-  })
+  // If user related to token doesn't exists
+  const token = await Token.findOne({ where: { token: incomingToken } })
+  if (!await User.userExists(token.idUser, "id")) {
+    res.status(StatusCodes.BAD_REQUEST).json({message: "User not found"})
+    return
+  }  
 
-  // If username is already used
-  User.findAll({ where: { username:incomingUser.username } }).then(users => {
-    if (users.length > 1) {
-      res.status(StatusCodes.BAD_REQUEST).json({message: "Username is already used"})
-      return
-    }
-  })
+  let updatedUser
+  try{
+    updatedUser = User.updateUser(incomingUser, token.idUser)
+    console.log(updatedUser)
+  }catch(err){
+    res.status(StatusCodes.BAD_REQUEST).json({message: err.message})
+    return
+  }
 
-  // Update the user
-  const salt = await bcrypt.genSalt(10);
-  userToUpdate.email = incomingUser.email
-  userToUpdate.username = incomingUser.username
-  userToUpdate.password = await bcrypt.hash(incomingUser.password, salt)
-  userToUpdate.role = incomingUser.role
-
-  userToUpdate.save()
-  res.status(StatusCodes.OK).json({user: userToUpdate, message: "User updated"})
-
+  res.status(StatusCodes.OK).json({user: await updatedUser, message: "User updated"})
 });
 module.exports = router;
