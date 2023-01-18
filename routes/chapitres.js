@@ -24,26 +24,46 @@ Chapitre.incomingCorrectlyFilled = (incomingChapitre)=>{
   incomingChapitre.idFormation != null
 }
 
+router.get('/getbyid/:id', async(req, res, next) => {
+  const id = req.params.id;
+  const chapitre = await Chapitre.findOne({where: {id: id}});
+  if(chapitre == null) {
+    res.status(StatusCodes.NOT_FOUND).json({message: "Chapter not found"})
+    return};
+  res.status(StatusCodes.OK).json({chapitre});
+});
 
+router.get('getall', async(req, res, next) => {
+  const chapitres = await Chapitre.findAll({where : isDeleted = false});
+  if(chapitres.length == 0) {
+    res.status(StatusCodes.NOT_FOUND).json({message: "No chapters found"})
+    return};
+  res.status(StatusCodes.OK).json({chapitres});
+});
 
-// //Get all chapters along with their associated exercises
-// router.get('/getbyformationid', async(req, res, next) => {
-//     var reqIdFormation = req.params.idformation
-//     const chapitres = await Chapitre.findAll({where : idFormation = reqIdFormation});
-//     if (chapitres.length == 0) {
-//       res.status(StatusCodes.NO_CONTENT).json({message: "No chapitres exist."})
-//       return;
-//     }
+router.put('/update/:id', async(req, res, next) => {
+  const id = req.params.id;
+  const chapitre = await Chapitre.findOne({where: {id: id}});
+  if(chapitre == null) {
+    res.status(StatusCodes.NOT_FOUND).json({message: "Chapter not found"})
+    return};
+  await Chapitre.update(req.body.Chapitre, {where: {id: id}});
+  res.status(StatusCodes.OK).json({message: "Chapter updated"});
+});
 
-//     //couldnt manage to assign exercises to their respectives chapter here
-//     chapitres.forEach(async chapter => {
-//       const exercices = await Exercice.findAll({where : idChapitre = chapter.id});
-//       const chapitreAssign = await Chapitre.assign
-//       // chapter["exercices"] = exercices;
-//       // console.log(chapter["exercices"], "exercice")
-//     });
-//     res.status(StatusCodes.OK).json(chapitres)
-// });
+router.delete('/delete/:id', async(req, res, next) => {
+  const id = req.params.id;
+  const chapitre = await Chapitre.findOne({where: {id: id}});
+  if(chapitre == null) {
+    res.status(StatusCodes.NOT_FOUND).json({message: "Chapter not found"})
+    return};
+  if(chapitre.isDeleted == true) {
+    res.status(StatusCodes.OK).json({message: "Exercice already deleted"});
+      return
+  }
+  await Chapitre.update({isDeleted : true},{where: {id: id}});
+  res.status(StatusCodes.OK).json({message: "Chapter deleted"});
+});
 
 router.post('/create', async(req,res,next) => {
   if (Chapitre.incomingCorrectlyFilled(req.body.Chapitre) == false) {
