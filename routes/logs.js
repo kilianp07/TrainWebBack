@@ -18,6 +18,45 @@ const create = async (log) => {
     }
   };
 
+router.get('/getbyid/:id', async(req, res, next) => {
+  const id = req.params.id;
+  const log = await Logs.findOne({where: {id: id}});
+  if(log == null) {
+    res.status(StatusCodes.NOT_FOUND).json({message: "Log not found"})
+    return};
+  res.status(StatusCodes.OK).json({log});
+});
+
+router.get('/getall', async(req, res, next) => {
+  const logs = await Logs.findAll({where : isDeleted = false});
+  if(logs.length == 0) {
+    res.status(StatusCodes.NOT_FOUND).json({message: "No logs found"})
+    return};
+  res.status(StatusCodes.OK).json({logs});
+});
+
+router.delete('/delete/:id', async(req, res, next) => {
+  const id = req.params.id;
+  const log = await Logs.findOne({where: {id: id}});
+  if(log == null) {
+    res.status(StatusCodes.NOT_FOUND).json({message: "Log not found"})
+    return};
+  if(log.isDeleted == true) {
+    res.status(StatusCodes.BAD_REQUEST).json({message: "Log already deleted"})
+    return};
+  await Logs.update({isDeleted: true}, {where: {id: id}});
+  res.status(StatusCodes.OK).json({message: "Log deleted"});
+});
+
+router.delete('/harddelete/:id', async(req, res, next) => {
+  const id = req.params.id;
+  const log = await Logs.findOne({where: {id: id}});
+  if(log == null) {
+    res.status(StatusCodes.NOT_FOUND).json({message: "Log not found"})
+    return};
+  await Logs.destroy({where: {id: id}});
+  res.status(StatusCodes.OK).json({message: "Log deleted from database"});
+});
 
 router.post('/create', async(req, res, next) => {
   if (Logs.incomingCorrectlyFilled(req.body.Logs) == false) {
