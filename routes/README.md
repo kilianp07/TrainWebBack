@@ -188,3 +188,25 @@ If the logout process was successfull you will receive a HTTP Status Code 200 wi
 {
     "message":"User logged out"
 }
+```
+## Token routes
+### Update token
+In the header of the request place your token in the "authorization" field.
+```bash
+PUT /tokens/update
+```
+If the update operation was successfull you will receive a HTTP Status Code 200 with this following response
+```json
+{
+    "token": {
+        "id": 20,
+        "token": "token",
+        "expirationDate": "2023-01-18T16:28:53.148Z",
+        "idUser": 3,
+        "isDeleted": false,
+        "updatedAt": "2023-01-18T16:27:53.148Z",
+        "createdAt": "2023-01-18T16:27:53.148Z"
+    },
+    "message": "Token updated"
+} 
+````

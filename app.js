@@ -13,6 +13,7 @@ var answerRouter = require('./routes/answer');
 var logsRouter = require('./routes/logs');
 var roleRouter = require('./routes/roles');
 var formUserProgressRouter = require('./routes/formuserprogress');
+var tokenRouter = require('./routes/token');
 
 var app = express();
 
@@ -35,6 +36,7 @@ app.use("/answers", answerRouter);
 app.use("/logs", logsRouter);
 app.use("/roles", roleRouter);
 app.use("/formuserprogress", formUserProgressRouter);
+app.use("/tokens", tokenRouter);
 
 
 // catch 404 and forward to error handler
