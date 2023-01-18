@@ -33,7 +33,7 @@ router.get('/getbyid/:id', async(req, res, next) => {
   res.status(StatusCodes.OK).json({chapitre});
 });
 
-router.get('getall', async(req, res, next) => {
+router.get('/getall', async(req, res, next) => {
   const chapitres = await Chapitre.findAll({where : isDeleted = false});
   if(chapitres.length == 0) {
     res.status(StatusCodes.NOT_FOUND).json({message: "No chapters found"})
