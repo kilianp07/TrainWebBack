@@ -52,6 +52,7 @@ module.exports = (sequelize, DataTypes) => {
     var token = {
       token: jwt.sign({id: Userid}, privateKey, {expiresIn: process.env.TOKEN_DURABILITY}),
       expirationDate: Date.now() + Number(process.env.TOKEN_DURABILITY),
+    }
     try{
       jwt.verify(token, process.env.SECRET_KEY)
     }catch(err){
