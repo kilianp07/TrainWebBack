@@ -36,6 +36,20 @@ router.get('/getall', async(req, res, next) => {
   res.status(StatusCodes.OK).json({chapitres});
 });
 
+router.get('/getallwithexercices', async(req, res, next) => {
+  const chapitres = await Chapitre.findAll({where : isDeleted = false});
+  if(chapitres.length == 0) {
+    res.status(StatusCodes.NOT_FOUND).json({message: "No chapters found"})
+    return};
+
+  chapitresWithExercices = [];
+  for(var chap of chapitres) {
+    exercices = await Exercice.findAll({where: {idChapitre : chap.id, isDeleted : false}});
+    chapitresWithExercices.push({"Chapitre": chap, "exercices": exercices});
+  }
+  res.status(StatusCodes.OK).json({chapitresWithExercices});
+});
+
 router.put('/update/:id', async(req, res, next) => {
   const id = req.params.id;
   const chapitre = await Chapitre.findOne({where: {id: id}});
