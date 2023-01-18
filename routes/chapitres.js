@@ -65,6 +65,16 @@ router.delete('/delete/:id', async(req, res, next) => {
   res.status(StatusCodes.OK).json({message: "Chapter deleted"});
 });
 
+router.delete('/harddelete/:id', async(req, res, next) => {
+  const id = req.params.id;
+  const chapitre = await Chapitre.findOne({where: {id: id}});
+  if(chapitre == null) {
+    res.status(StatusCodes.NOT_FOUND).json({message: "Chapter not found"})
+    return};
+  await Chapitre.destroy({where: {id: id}});
+  res.status(StatusCodes.OK).json({message: "Chapter deleted"});
+});
+
 router.post('/create', async(req,res,next) => {
   if (Chapitre.incomingCorrectlyFilled(req.body.Chapitre) == false) {
      res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
