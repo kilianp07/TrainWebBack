@@ -38,6 +38,10 @@ module.exports = (sequelize, DataTypes) => {
       const currentTime = Math.floor(Date.now() / 1000);
       if (currentTime >= expirationTime) {
           console.log("Token expired");
+          Token.findOne({ where: { token: token } }).then(token => {
+            token.isDeleted = true;
+            token.save();
+          })
           return false;
       }
       // Token is valid and not expired
@@ -60,7 +64,14 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   Token.tokenExists = async function(token) {
-    return await Token.findOne({ where: { token: token } }) != null
+    return await Token.findOne({ where: { token: token, isDeleted: false } }) != null
+  }
+
+  Token.deprecate = async function(token) {
+    Token.findOne({ where: { token: token } }).then(token => {
+      token.isDeleted = true;
+      token.save();
+    })
   }
 
   return Token;
