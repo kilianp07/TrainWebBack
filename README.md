@@ -11,12 +11,12 @@ npm install
 Create a .env file in the root directory and add the following variables:
 
 ```bash
-DB_USER=
-DB_PASSWORD=
-DB_NAME=
-PORT=
-PUBLIC_KEY='config/JwtKeys/public.pem'
+DB_USER=''
+DB_PASSWORD=''
+DB_NAME='database_development'
+PORT='80'
 SECRET_KEY='config/JwtKeys/private.pem'
+TOKEN_DURABILITY='60000'
 ```
 > ATTENTION: Write environment Variables between: "
 
