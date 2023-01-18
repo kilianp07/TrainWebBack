@@ -21,9 +21,9 @@ SECRET_KEY='config/JwtKeys/private.pem'
 Generate a key pair for JWT authentication:
 
 ```bash
-openssl genrsa -out config/JwtKeys/private.pem 2048 
-&& 
-openssl rsa -in config/JwtKeys/private.pem -pubout -out config/JwtKeys/public.pem
+openssl genrsa -out config/JwtKeys/private.pem 2048 && openssl rsa -in config/JwtKeys/private.pem -pubout -out config/JwtKeys/public.pem
+
+-> ATTENTION: Bien avoir installé openssl
 ```
 
 ## Usage
