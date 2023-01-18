@@ -45,6 +45,17 @@ router.get('/getall', async(req, res, next) => {
   res.status(StatusCodes.OK).json({exercices});
 });
 
+router.put('/update/:id', async(req, res, next) => {
+  const id = req.params.id;
+  const exercice = await Exercice.findOne({where: {id: id}});
+  if(exercice == null) {
+    res.status(StatusCodes.NOT_FOUND).json({message: "Exercice not found"})
+    return};
+  await Exercice.update(req.body.Exercice, {where: {id: id}});
+  res.status(StatusCodes.OK).json({message: "Exercice updated"});
+});
+
+
 router.post('/create', async(req,res,next) => {
   if (Exercice.incomingCorrectlyFilled(req.body.Exercice) == false) {
      res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
