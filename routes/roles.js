@@ -10,9 +10,9 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
 const Role = require('../models/role')(sequelize, Sequelize.DataTypes,Sequelize.Model);
 var router = express.Router();
 
-const create = async (exo) => {
+const create = async (role) => {
     try {
-    const createdExo = await Exercice.create(exo)
+    const createdRole = await Role.create(role)
     } catch (error) {
     console.log(error)
     }
@@ -63,4 +63,13 @@ router.delete('/delete/:id', async(req, res, next) => {
     res.status(StatusCodes.OK).json({message: "Role deleted from database"});
   });
 
-module.exports = router;
+  router.post('/create', async(req,res,next) => {
+    if (Role.incomingCorrectlyFilled(req.body.Role) == false) {
+       res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
+       return
+     }
+     const createdRole = await create(req.body.Role)
+     res.status(StatusCodes.CREATED).json({createdRole, message: "Role created"})
+  });
+  
+  module.exports = router;
