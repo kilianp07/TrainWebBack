@@ -25,5 +25,14 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Answer',
   });
+
+  
+  Answer.incomingCorrectlyFilled = function(incomingAnswer){
+    return incomingAnswer.idExercice != null && 
+    incomingAnswer.idUser != null && 
+    incomingAnswer.value != null && 
+    incomingAnswer.status != null && 
+    incomingAnswer.suspended != null;
+  }
   return Answer;
 };

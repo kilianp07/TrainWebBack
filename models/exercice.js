@@ -28,5 +28,15 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Exercice',
   });
+  
+  Exercice.incomingCorrectlyFilled = function(incomingExercise){
+    return incomingExercise.name != null && 
+    incomingExercise.consigne != null && 
+    incomingExercise.type != null && 
+    incomingExercise.answer != null && 
+    incomingExercise.idCreateur != null && 
+    incomingExercise.idChapitre != null;
+  }
+
   return Exercice;
 };

@@ -20,5 +20,9 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Role',
   });
+  
+  Role.incomingCorrectlyFilled = function(incomingRole){
+    return incomingRole.value != null;
+  }
   return Role;
 };

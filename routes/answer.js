@@ -19,14 +19,6 @@ const create = async (answer) => {
     }
 };
 
-Answer.incomingCorrectlyFilled = (incomingAnswer)=>{
-    return incomingAnswer.idExercice != null && 
-    incomingAnswer.idUser != null && 
-    incomingAnswer.value != null && 
-    incomingAnswer.status != null && 
-    incomingAnswer.suspended != null;
-}
-
 router.get('/getbyid/:id', async(req, res, next) => {
   const id = req.params.id;
   const answer = await Answer.findOne({where: {id: id}});

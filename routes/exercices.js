@@ -18,16 +18,6 @@ const create = async (exo) => {
     }
   };
 
-Exercice.incomingCorrectlyFilled = (incomingExercise)=>{
-  return incomingExercise.name != null && 
-  incomingExercise.consigne != null && 
-  incomingExercise.type != null && 
-  incomingExercise.answer != null && 
-  incomingExercise.idCreateur != null && 
-  incomingExercise.idChapitre != null;
-}
-
-
 router.get('/getbyid/:id', async(req, res, next) => {
   const id = req.params.id;
   const exercice = await Exercice.findOne({where: {id: id}});
