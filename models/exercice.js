@@ -22,7 +22,8 @@ module.exports = (sequelize, DataTypes) => {
     type: DataTypes.STRING,
     idChapitre: DataTypes.INTEGER,
     idCreateur: DataTypes.INTEGER,
-    answer: DataTypes.STRING
+    answer: DataTypes.STRING,
+    isDeleted: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Exercice',
