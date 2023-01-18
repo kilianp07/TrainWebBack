@@ -27,6 +27,23 @@ Answer.incomingCorrectlyFilled = (incomingAnswer)=>{
     incomingAnswer.suspended != null;
 }
 
+router.get('/getbyid/:id', async(req, res, next) => {
+  const id = req.params.id;
+  const answer = await Answer.findOne({where: {id: id}});
+  if(answer == null) {
+    res.status(StatusCodes.NOT_FOUND).json({message: "Answer not found"})
+    return};
+  res.status(StatusCodes.OK).json({answer});
+});
+
+router.get('/getall', async(req, res, next) => {
+  const answers = await Answer.findAll({where : {isDeleted: false}});
+  if(answers.length == 0) {
+    res.status(StatusCodes.NOT_FOUND).json({message: "No answers found"})
+    return};
+  res.status(StatusCodes.OK).json({answers});
+});
+
 router.post('/create', async(req,res,next) => {
     if (Answer.incomingCorrectlyFilled(req.body.Answer) == false) {
        res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
