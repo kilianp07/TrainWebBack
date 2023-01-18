@@ -3,13 +3,15 @@
 ### Register
 To register a student:
 ```bash
-POST /user/student/create
+POST /users/student/create
 ```
 ```json
 {
-    "username": "John Doe",
-    "email": "johndoe@mail.com",
-    "password": "password"
+    "user":{
+        "username": "John Doe",
+        "email": "johndoe@mail.com",
+        "password": "password"
+    }
 }
 ```
 All the keys must be filled or the server will return a 400 HTTP code with the following message:
@@ -47,15 +49,67 @@ If the POST request is correct you will receive the following response :
     "message": "User created"
 }
 ````
-### Login
-To login a user:
+To register a teacher:
 ```bash
-POST /user/login
+POST /users/teacher/create
+```
+To register a teacher you need to do it with an admin or a teacher account. 
+```json
+{
+    "user":{
+        "username": "John Doe",
+        "email": "johndoe@mail.com",
+        "password": "password"
+    },
+    "token": "token"
+}
+```
+All the keys must be filled or the server will return a 400 HTTP code with the following message:
+```json
+{
+    "message": "Missing parameters"
+}
+```
+\
+If the mail or the username are already used by another user, the server will return 400 HTTP error code with the following message:
+```json
+{
+    "message": "Username is already used"
+}
 ```
 ```json
 {
-    "email": "johndoe@mail.com",
-    "password": "password"
+    "message": "Email is already used"
+}
+```
+
+If the POST request is correct you will receive the following response :
+```json
+{
+    "createdUser": {
+        "id": 2,
+        "email": "johndoe@mail.com",
+        "username": "John Doe",
+        "password": "hashedPassword",
+        "emailVerified": false,
+        "role": "Teacher",
+        "updatedAt": "2023-01-16T10:53:14.332Z",
+        "createdAt": "2023-01-16T10:53:14.332Z"
+    },
+    "message": "User created"
+}
+````
+### Login
+To login a user:
+```bash
+POST /users/login
+```
+```json
+{
+    "user":{
+        "email": "johndoe@mail.com",
+        "password": "password"
+    }
 }
 ```
 
@@ -94,14 +148,16 @@ Possibles errors:
 To update a user: \
 In the header of the request place your token in the "authorization" field.
 ```bash
-PUT /user/update
+PUT /users/update
 ```
 ```json
 {
-    "username": "John Doe",
-    "email": "johndoe2@mail.com",
-    "password": "Newpassword",
-    "role": "TEACHER"
+    "user": {
+        "username": "John Doe",
+        "email": "johndoe2@mail.com",
+        "password": "Newpassword",
+        "role": "TEACHER"
+    }
 }
 ```
 All the keys are required, you can't update only one of them.
