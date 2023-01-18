@@ -19,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
   Token.init({
     token: DataTypes.STRING,
     expirationDate: DataTypes.DATE,
-    idUser: DataTypes.INTEGER
+    idUser: DataTypes.INTEGER,
+    isDeleted: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Token',
