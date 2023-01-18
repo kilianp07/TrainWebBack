@@ -23,9 +23,18 @@ SECRET_KEY='config/JwtKeys/private.pem'
 Generate a key pair for JWT authentication:
 
 ```bash
-openssl genrsa -out config/JwtKeys/private.pem 2048 && openssl rsa -in config/JwtKeys/private.pem -pubout -out config/JwtKeys/public.pem
+openssl rand 128 > config/JwtKeys/private.pem
 ```
 > ATTENTION: Create the config directory config/JwtKeys
+
+Create your database with:
+```bash
+npx sequelize-cli db:create
+```
+Create your scheme with:
+```bash
+npx sequelize-cli db:migrate
+```
 
 ## Usage
 To start the server run:

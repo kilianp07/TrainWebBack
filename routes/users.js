@@ -55,17 +55,20 @@ router.post('/teacher/create', async(req,res,next) => {
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
   if(!await Token.tokenExists(incomingToken)) {
+  if(!Token.tokenExists(incomingToken)) {
     res.status(StatusCodes.UNAUTHORIZED).json({message: "You must be connected"})
     return
   }
 
   if(!await Token.verifyToken(incomingToken)) {
+  if(!Token.verifyToken(incomingToken)) {
     res.status(StatusCodes.UNAUTHORIZED).json({message: "You must be connected"})
     return
   }
   
   token = await Token.findOne({ where: { token: incomingToken } })
   if(!await User.userExists(token.idUser, "id")) {
+  if(!User.userExists(token.idUser, "id")) {
     res.status(StatusCodes.UNAUTHORIZED).json({message: "Unrecognized user"})
     return
   }
@@ -145,11 +148,13 @@ router.put('/update', async(req,res,next) => {
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
   if (!await Token.tokenExists(incomingToken)) {
+  if (!Token.tokenExists(incomingToken)) {
     res.status(StatusCodes.BAD_REQUEST).json({message: "Token not found"})
     return
   }
 
   if(!await Token.verify(incomingToken)){
+  if(!Token.verify(incomingToken)){
     res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid token"})
     return
   }
@@ -162,6 +167,7 @@ router.put('/update', async(req,res,next) => {
   // If user related to token doesn't exists
   const token = await Token.findOne({ where: { token: incomingToken } })
   if (!await User.userExists(token.idUser, "id")) {
+  if (!User.userExists(token.idUser, "id")) {
     res.status(StatusCodes.BAD_REQUEST).json({message: "User not found"})
     return
   }  
