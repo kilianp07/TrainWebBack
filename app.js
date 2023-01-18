@@ -10,6 +10,9 @@ var formationsRouter = require('./routes/formations');
 var chapitreRouter = require('./routes/chapitres');
 var exerciceRouter = require('./routes/exercices');
 var answerRouter = require('./routes/answer');
+var logsRouter = require('./routes/logs');
+var roleRouter = require('./routes/roles');
+var formUserProgressRouter = require('./routes/formuserprogress');
 
 var app = express();
 
@@ -29,6 +32,10 @@ app.use("/formations", formationsRouter);
 app.use("/chapitres", chapitreRouter);
 app.use("/exercices", exerciceRouter);
 app.use("/answers", answerRouter);
+app.use("/logs", logsRouter);
+app.use("/roles", roleRouter);
+app.use("/formuserprogress", formUserProgressRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

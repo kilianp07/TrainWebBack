@@ -13,6 +13,7 @@ Create a .env file in the root directory and add the following variables:
 ```bash
 DB_USER=
 DB_PASSWORD=
+DB_NAME=
 PORT=
 PUBLIC_KEY='config/JwtKeys/public.pem'
 SECRET_KEY='config/JwtKeys/private.pem'

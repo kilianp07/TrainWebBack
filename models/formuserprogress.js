@@ -24,5 +24,18 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'FormUserProgress',
   });
+
+  FormUserProgress.incomingCorrectlyFilled = function(formuserprogress){
+    if (formuserprogress.progress == null) {
+      return false;
+    }
+    if (formuserprogress.idUser == null) {
+      return false;
+    }
+    if (formuserprogress.idFormation == null) {
+      return false;
+    }
+    return true;
+  }
   return FormUserProgress;
 };
