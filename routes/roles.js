@@ -31,4 +31,12 @@ router.get('/getbyid/:id', async(req, res, next) => {
     res.status(StatusCodes.OK).json({role});
 });
 
+router.get('/getall', async(req, res, next) => {
+    const roles = await Role.findAll({where : isDeleted = false});
+    if(roles.length == 0) {
+      res.status(StatusCodes.NOT_FOUND).json({message: "No roles found"})
+      return};
+    res.status(StatusCodes.OK).json({roles});
+});
+
 module.exports = router;
