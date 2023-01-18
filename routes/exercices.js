@@ -28,6 +28,23 @@ Exercice.incomingCorrectlyFilled = (incomingExercise)=>{
 }
 
 
+router.get('/getbyid/:id', async(req, res, next) => {
+  const id = req.params.id;
+  const exercice = await Exercice.findOne({where: {id: id}});
+  if(exercice == null) {
+    res.status(StatusCodes.NOT_FOUND).json({message: "Exercice not found"})
+    return};
+  res.status(StatusCodes.OK).json({exercice});
+});
+
+router.get('/getall', async(req, res, next) => {
+  const exercices = await Exercice.findAll();
+  if(exercices.length == 0) {
+    res.status(StatusCodes.NOT_FOUND).json({message: "No exercices found"})
+    return};
+  res.status(StatusCodes.OK).json({exercices});
+});
+
 router.post('/create', async(req,res,next) => {
   if (Exercice.incomingCorrectlyFilled(req.body.Exercice) == false) {
      res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
