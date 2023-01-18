@@ -15,7 +15,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   Logs.init({
     value: DataTypes.STRING,
-    idUser: DataTypes.INTEGER
+    idUser: DataTypes.INTEGER,
+    isDeleted: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Logs',

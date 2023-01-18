@@ -18,8 +18,8 @@ module.exports = (sequelize, DataTypes) => {
   FormUserProgress.init({
     progress: DataTypes.STRING,
     idUser: DataTypes.INTEGER,
-    idFormation: DataTypes.INTEGER
-
+    idFormation: DataTypes.INTEGER,
+    isDeleted: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'FormUserProgress',

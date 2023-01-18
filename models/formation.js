@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Formation',
+    isDeleted: DataTypes.BOOLEAN
   });
   return Formation;
 };

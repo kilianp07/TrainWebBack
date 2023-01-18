@@ -19,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
     idUser: DataTypes.INTEGER,
     value: DataTypes.STRING,
     suspended: DataTypes.BOOLEAN,
-    status: DataTypes.STRING
+    status: DataTypes.STRING,
+    isDeleted: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Answer',
