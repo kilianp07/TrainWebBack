@@ -42,8 +42,22 @@ router.delete('/delete/:id', async(req, res, next) => {
     if(answer == null) {
       res.status(StatusCodes.NOT_FOUND).json({message: "Answer not found"})
       return};
-    await Answer.destroy({where: {id: id}});
+    if(answer.isDeleted == true) {
+    res.status(StatusCodes.OK).json({message: "Answer already deleted"});
+      return
+    }
+    await Answer.update({isDeleted : true}, {where: {id: id}});
     res.status(StatusCodes.OK).json({message: "Answer deleted"});
+});
+  
+router.delete('/harddelete/:id', async(req, res, next) => {
+    const id = req.params.id;
+    const answer = await Answer.findOne({where: {id: id}});
+    if(answer == null) {
+      res.status(StatusCodes.NOT_FOUND).json({message: "Answer not found"})
+      return};
+    await Answer.destroy({where: {id: id}});
+    res.status(StatusCodes.OK).json({message: "Answer deleted from database"});
 });
 
 
