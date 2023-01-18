@@ -77,5 +77,14 @@ router.delete('/harddelete/:id', async(req, res, next) => {
     res.status(StatusCodes.OK).json({message: "Answer deleted from database"});
 });
 
+router.put('/update/:id', async(req, res, next) => {
+  const id = req.params.id;
+  const answer = await Answer.findOne({where: {id: id}});
+  if(answer == null) {
+    res.status(StatusCodes.NOT_FOUND).json({message: "Answer not found"})
+    return};
+  await Answer.update(req.body.Answer, {where: {id: id}});
+  res.status(StatusCodes.OK).json({message: "Answer updated"});
+});
 
 module.exports = router;
