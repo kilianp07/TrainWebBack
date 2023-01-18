@@ -177,3 +177,14 @@ If the update is correct you will receive the following response:
     "message": "User updated"
 }
 ```
+
+### Logout User
+In the header of the request place your token in the "authorization" field.
+```bash
+POST /users/logout
+```
+If the logout process was successfull you will receive a HTTP Status Code 200 with this following response:
+```json
+{
+    "message":"User logged out"
+}
