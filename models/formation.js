@@ -17,11 +17,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Formation.init({
-    name: DataTypes.STRING
+    name: DataTypes.STRING,
+    isDeleted: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Formation',
-    isDeleted: DataTypes.BOOLEAN
   });
   return Formation;
 };
