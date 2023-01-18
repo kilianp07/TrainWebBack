@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     isDeleted: DataTypes.BOOLEAN
   }, {
     sequelize,
-    modelName: 'Token',
+    modelName: 'Token'
   });
 
   Token.verify = async function(token) {
@@ -38,6 +38,10 @@ module.exports = (sequelize, DataTypes) => {
       const currentTime = Math.floor(Date.now() / 1000);
       if (currentTime >= expirationTime) {
           console.log("Token expired");
+          Token.findOne({ where: { token: token } }).then(token => {
+            token.isDeleted = true;
+            token.save();
+          })
           return false;
       }
       // Token is valid and not expired
@@ -53,26 +57,21 @@ module.exports = (sequelize, DataTypes) => {
     var token = {
       token: jwt.sign({id: Userid}, privateKey, {expiresIn: process.env.TOKEN_DURABILITY}),
       expirationDate: Date.now() + Number(process.env.TOKEN_DURABILITY),
-    }
-    try{
-      jwt.verify(token, process.env.SECRET_KEY)
-    }catch(err){
-      return false
-    }
-    return true
-  }
-
-  Token.generate = async function(Userid) {
-    var token = {
-      token: jwt.sign({id: Userid}, process.env.SECRET_KEY, {expiresIn: "1h"}),
-      expirationDate: Date.now() + 36000,
-      idUser: Userid
+      idUser: Userid,
+      isDeleted: false
     }
     return await Token.create(token)
   }
 
   Token.tokenExists = async function(token) {
-    return await Token.findOne({ where: { token: token } }) != null
+    return await Token.findOne({ where: { token: token, isDeleted: false } }) != null
+  }
+
+  Token.deprecate = async function(token) {
+    Token.findOne({ where: { token: token } }).then(token => {
+      token.isDeleted = true;
+      token.save();
+    })
   }
 
   return Token;

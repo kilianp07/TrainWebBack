@@ -177,4 +177,26 @@ router.put('/update', async(req,res,next) => {
 
   res.status(StatusCodes.OK).json({user: await updatedUser, message: "User updated"})
 });
+
+router.post('/logout', async(req,res,next) => {
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if(!incomingToken){
+    res.status(StatusCodes.BAD_REQUEST).json({message: "Missing token"})
+    return
+  }
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.BAD_REQUEST).json({message: "Token not found"})
+    return
+  }
+
+  try{
+    await Token.deprecate(incomingToken)
+  }catch(err){
+    res.status(StatusCodes.BAD_REQUEST).json({message: err.message})
+    return
+  }
+  res.status(StatusCodes.OK).json({message: "User logged out"})
+});
 module.exports = router;

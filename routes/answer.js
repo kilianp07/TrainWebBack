@@ -44,6 +44,7 @@ router.get('/getall', async(req, res, next) => {
   res.status(StatusCodes.OK).json({answers});
 });
 
+
 router.post('/create', async(req,res,next) => {
     if (Answer.incomingCorrectlyFilled(req.body.Answer) == false) {
        res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
@@ -77,6 +78,7 @@ router.delete('/harddelete/:id', async(req, res, next) => {
     res.status(StatusCodes.OK).json({message: "Answer deleted from database"});
 });
 
+
 router.put('/update/:id', async(req, res, next) => {
   const id = req.params.id;
   const answer = await Answer.findOne({where: {id: id}});
@@ -86,5 +88,6 @@ router.put('/update/:id', async(req, res, next) => {
   await Answer.update(req.body.Answer, {where: {id: id}});
   res.status(StatusCodes.OK).json({message: "Answer updated"});
 });
+
 
 module.exports = router;

@@ -22,6 +22,7 @@ Formation.incomingCorrectlyFilled = (incomingFormation)=>{
   return incomingFormation.name != null;
 }
 
+
 router.get('/getbyid/:id', async(req, res, next) => {
   const id = req.params.id;
   const formation = await Formation.findOne({where: {id: id}});
@@ -30,6 +31,7 @@ router.get('/getbyid/:id', async(req, res, next) => {
     return};
   res.status(StatusCodes.OK).json({formation});
 });
+
 
 router.get('/getall', async(req, res, next) => {
     const formations = await Formation.findAll();
@@ -73,6 +75,7 @@ router.delete('/harddelete/:id', async(req, res, next) => {
   await Formation.destroy({where: {id: id}});
   res.status(StatusCodes.OK).json({message: "Formation deleted from database"});
 });
+
 
 router.put('/update/:id', async(req, res, next) => {
   const id = req.params.id;
