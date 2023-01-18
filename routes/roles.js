@@ -71,5 +71,15 @@ router.delete('/delete/:id', async(req, res, next) => {
      const createdRole = await create(req.body.Role)
      res.status(StatusCodes.CREATED).json({createdRole, message: "Role created"})
   });
+
+  router.put('/update/:id', async(req, res, next) => {
+    const id = req.params.id;
+    const role = await Role.findOne({where: {id: id}});
+    if(role == null) {
+      res.status(StatusCodes.NOT_FOUND).json({message: "Role not found"})
+      return};
+    await Role.update(req.body.Role, {where: {id: id}});
+    res.status(StatusCodes.OK).json({message: "Role updated"});
+  });
   
   module.exports = router;
