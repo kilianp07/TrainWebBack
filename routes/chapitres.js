@@ -19,6 +19,13 @@ const create = async (chapter) => {
   }
 };
 
+Chapitre.incomingCorrectlyFilled = (incomingChapitre)=>{
+  return incomingChapitre.name != null &&
+  incomingChapitre.idFormation != null
+}
+
+
+
 // //Get all chapters along with their associated exercises
 // router.get('/getbyformationid', async(req, res, next) => {
 //     var reqIdFormation = req.params.idformation
@@ -39,18 +46,11 @@ const create = async (chapter) => {
 // });
 
 router.post('/create', async(req,res,next) => {
-  if (req.body.name == null || req.body.idformation == null) {
+  if (Chapitre.incomingCorrectlyFilled(req.body.Chapitre) == false) {
      res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
      return
    }
- 
-  var newChapitre = {
-     name: req.body.name,
-     idFormation : req.body.idformation,
-     createdAt: Date.now(),
-     UpdatedAt: Date.now()
-  }
-   const createdChapitre = await create(newChapitre)
+   const createdChapitre = await create(req.body.Chapitre)
    res.status(StatusCodes.CREATED).json({createdChapitre, message: "Chapter created"})
 });
 

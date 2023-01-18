@@ -18,29 +18,22 @@ const create = async (exo) => {
     }
   };
 
+Exercice.incomingCorrectlyFilled = (incomingExercise)=>{
+  return incomingExercise.name != null && 
+  incomingExercise.consigne != null && 
+  incomingExercise.type != null && 
+  incomingExercise.answer != null && 
+  incomingExercise.idCreateur != null && 
+  incomingExercise.idChapitre != null;
+}
+
 
 router.post('/create', async(req,res,next) => {
-  if (req.body.name == null 
-    || req.body.consigne == null 
-    || req.body.type == null 
-    || req.body.answer == null 
-    || req.body.idcreateur == null 
-    || req.body.idchapitre == null) {
+  if (Exercice.incomingCorrectlyFilled(req.body.Exercice) == false) {
      res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
      return
    }
- 
-  var newExercice = {
-     name: req.body.name,
-     consigne: req.body.consigne,
-     type: req.body.type,
-     answer: req.body.answer,
-     idChapitre : req.body.idchapitre,
-     idCreateur : req.body.idcreateur,
-     createdAt: Date.now(),
-     updatedAt: Date.now()
-  }
-   const createdExercice = await create(newExercice)
+   const createdExercice = await create(req.body.Exercice)
    res.status(StatusCodes.CREATED).json({createdExercice, message: "Exercice created"})
 });
 

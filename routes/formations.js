@@ -18,6 +18,10 @@ const create = async (frm) => {
   }
 };
 
+Formation.incomingCorrectlyFilled = (incomingFormation)=>{
+  return incomingFormation.name != null;
+}
+
 router.get('/getall', async(req, res, next) => {
     const formations = await Formation.findAll();
     if (formations.length == 0) {
@@ -29,17 +33,11 @@ router.get('/getall', async(req, res, next) => {
 });
 
 router.post('/create', async(req,res,next) => {
-  if (req.body.name == null) {
+  if (Formation.incomingCorrectlyFilled(req.body.Formation) == false) {
      res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
      return
    }
- 
-  var newFormation = {
-     name: req.body.name,
-     createdAt: Date.now(),
-     updatedAt: Date.now()
-  }
-   const createdFormation = await create(newFormation)
+   const createdFormation = await create(req.body.Formation)
    res.status(StatusCodes.CREATED).json({createdFormation, message: "Formation created"})
 });
 
