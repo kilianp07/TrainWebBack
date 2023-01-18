@@ -16,6 +16,8 @@ DB_PASSWORD=
 PORT=
 PUBLIC_KEY='config/JwtKeys/public.pem'
 SECRET_KEY='config/JwtKeys/private.pem'
+
+-> ATTENTION: bien mettre les variables d'environnement à saisir entre "
 ```
 
 Generate a key pair for JWT authentication:
