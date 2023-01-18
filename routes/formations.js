@@ -18,11 +18,6 @@ const create = async (frm) => {
   }
 };
 
-Formation.incomingCorrectlyFilled = (incomingFormation)=>{
-  return incomingFormation.name != null;
-}
-
-
 router.get('/getbyid/:id', async(req, res, next) => {
   const id = req.params.id;
   const formation = await Formation.findOne({where: {id: id}});

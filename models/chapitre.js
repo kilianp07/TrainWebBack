@@ -24,5 +24,11 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Chapitre',
   });
+  
+  Chapitre.incomingCorrectlyFilled = function(incomingChapitre){
+    return incomingChapitre.name != null &&
+    incomingChapitre.idFormation != null
+  }
+  
   return Chapitre;
 };

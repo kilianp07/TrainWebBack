@@ -18,10 +18,6 @@ const create = async (role) => {
     }
 };
 
-Role.incomingCorrectlyFilled = (incomingRole)=>{
-    return incomingRole.value != null;
-}
-
 router.get('/getbyid/:id', async(req, res, next) => {
     const id = req.params.id;
     const role = await Role.findOne({where: {id: id}});

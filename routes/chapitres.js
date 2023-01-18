@@ -19,11 +19,6 @@ const create = async (chapter) => {
   }
 };
 
-Chapitre.incomingCorrectlyFilled = (incomingChapitre)=>{
-  return incomingChapitre.name != null &&
-  incomingChapitre.idFormation != null
-}
-
 router.get('/getbyid/:id', async(req, res, next) => {
   const id = req.params.id;
   const chapitre = await Chapitre.findOne({where: {id: id}});

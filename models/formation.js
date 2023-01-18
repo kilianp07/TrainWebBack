@@ -23,5 +23,10 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Formation',
   });
+
+  Formation.incomingCorrectlyFilled = function(incomingFormation){
+    return incomingFormation.name != null;
+  }
+
   return Formation;
 };
