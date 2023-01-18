@@ -27,6 +27,15 @@ openssl genrsa -out config/JwtKeys/private.pem 2048 && openssl rsa -in config/Jw
 ```
 > ATTENTION: Create the config directory config/JwtKeys
 
+Create your database with:
+```bash
+npx sequelize-cli db:create
+```
+Create your scheme with:
+```bash
+npx sequelize-cli db:migrate
+```
+
 ## Usage
 To start the server run:
 ```bash
