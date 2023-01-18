@@ -55,6 +55,15 @@ router.put('/update/:id', async(req, res, next) => {
   res.status(StatusCodes.OK).json({message: "Exercice updated"});
 });
 
+router.delete('/delete/:id', async(req, res, next) => {
+  const id = req.params.id;
+  const exercice = await Exercice.findOne({where: {id: id}});
+  if(exercice == null) {
+    res.status(StatusCodes.NOT_FOUND).json({message: "Exercice not found"})
+    return};
+  await Exercice.destroy({where: {id: id}});
+  res.status(StatusCodes.OK).json({message: "Exercice deleted"});
+});
 
 router.post('/create', async(req,res,next) => {
   if (Exercice.incomingCorrectlyFilled(req.body.Exercice) == false) {
