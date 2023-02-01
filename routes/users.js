@@ -31,11 +31,11 @@ router.post('/student/create', async(req,res,next) => {
   
     // Check if user already exists
     if (await User.userExists(incomingUser.email, "email")) {
-      res.status(StatusCodes.BAD_REQUEST).json({ message: "Email is already used"})
+      res.status(StatusCodes.CONFLICT).json({ message: "Email is already used"})
       return
     }
     if (await User.userExists(incomingUser.username, "username")) {
-      res.status(StatusCodes.BAD_REQUEST).json({ message: "Username is already used"})
+      res.status(StatusCodes.CONFLICT).json({ message: "Username is already used"})
       return
     }
   
@@ -72,7 +72,7 @@ router.post('/teacher/create', async(req,res,next) => {
 
     const user = await User.findOne({ where: { id: token.idUser } })
     if(user.role != "ADMIN" || user.role != "TEACHER") {
-      res.status(StatusCodes.UNAUTHORIZED).json({message: "You must be an admin or a teacher to create a teacher"})
+      res.status(StatusCodes.FORBIDDEN).json({message: "You must be an admin or a teacher to create a teacher"})
       return
     }
 
@@ -87,11 +87,11 @@ router.post('/teacher/create', async(req,res,next) => {
 
     // Check if user already exists
     if (await User.userExists(incomingUser.email, "email")) {
-      res.status(StatusCodes.BAD_REQUEST).json({ message: "Email is already used"})
+      res.status(StatusCodes.CONFLICT).json({ message: "Email is already used"})
       return
     }
     if (await User.userExists(incomingUser.username, "username")) {
-      res.status(StatusCodes.BAD_REQUEST).json({ message: "Username is already used"})
+      res.status(StatusCodes.CONFLICT).json({ message: "Username is already used"})
       return
     }
 
@@ -111,11 +111,12 @@ router.post('/login', async(req,res,next) => {
   const incomingUser = req.body.user
   
   if(!await User.userExists(incomingUser.email, "email") && !await User.userExists(incomingUser.username, "username")) {
-    res.status(StatusCodes.BAD_REQUEST).json({message: "User not found"})
+    res.status(StatusCodes.NO_CONTENT).json({message: "User not found"})
     return
   }
 
   let user
+  // this block allows the user to log in with either his email or his password, both do not need to be filled in
   switch(true)  {
     case await User.userExists(incomingUser.email, "email") && incomingUser.password != null:
       user = await User.findOne({ where: { email: incomingUser.email } })
@@ -130,7 +131,7 @@ router.post('/login', async(req,res,next) => {
 
   const validPassword = await bcrypt.compare(incomingUser.password, user.password)
   if (!validPassword) {
-    res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid password"})
+    res.status(StatusCodes.UNAUTHORIZED).json({message: "Invalid password"})
     return
   }
 
@@ -144,34 +145,33 @@ router.put('/update', async(req,res,next) => {
   const incomingUser = req.body.user
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
+  if(!User.incomingCorrectlyFilled(incomingUser) && incomingUser.role == null) {
+    res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
+    return
+  }
+
   if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.BAD_REQUEST).json({message: "Token not found"})
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
     return
   }
 
   if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid token"})
-    return
-  }
-
-  if(!User.incomingCorrectlyFilled(incomingUser) && incomingUser.role == null) {
-    res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
     return
   }
   
   // If user related to token doesn't exists
   const token = await Token.findOne({ where: { token: incomingToken } })
   if (!await User.userExists(token.idUser, "id")) {
-    res.status(StatusCodes.BAD_REQUEST).json({message: "User not found"})
+    res.status(StatusCodes.NO_CONTENT).json({message: "User not found"})
     return
   }  
 
   let updatedUser
   try{
     updatedUser = User.updateUser(incomingUser, token.idUser)
-    console.log(updatedUser)
   }catch(err){
-    res.status(StatusCodes.BAD_REQUEST).json({message: err.message})
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message})
     return
   }
 
@@ -187,14 +187,14 @@ router.post('/logout', async(req,res,next) => {
   }
 
   if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.BAD_REQUEST).json({message: "Token not found"})
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
     return
   }
 
   try{
     await Token.deprecate(incomingToken)
   }catch(err){
-    res.status(StatusCodes.BAD_REQUEST).json({message: err.message})
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message})
     return
   }
   res.status(StatusCodes.OK).json({message: "User logged out"})
