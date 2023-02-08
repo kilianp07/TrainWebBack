@@ -37,6 +37,15 @@ var tokenRouter = require('./routes/token');
 
 var app = express();
 
+//CORS middleware
+var allowCrossDomain = function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', 'example.com');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+  next();
+}
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -47,16 +56,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter, limiter, cors(corsOptions));
-app.use('/users', usersRouter, limiter, cors(corsOptions));
-app.use("/formations", formationsRouter, limiter, cors(corsOptions));
-app.use("/chapitres", chapitreRouter, limiter, cors(corsOptions));
-app.use("/exercices", exerciceRouter, limiter, cors(corsOptions));
-app.use("/answers", answerRouter, limiter, cors(corsOptions));
-app.use("/logs", logsRouter, limiter, cors(corsOptions));
-app.use("/roles", roleRouter, limiter, cors(corsOptions));
-app.use("/formuserprogress", formUserProgressRouter, limiter, cors(corsOptions));
-app.use("/tokens", tokenRouter, limiter, cors(corsOptions));
+app.use('/', indexRouter, limiter, allowCrossDomain);
+app.use('/users', usersRouter, limiter, allowCrossDomain);
+app.use("/formations", formationsRouter, limiter, allowCrossDomain);
+app.use("/chapitres", chapitreRouter, limiter, allowCrossDomain);
+app.use("/exercices", exerciceRouter, limiter, allowCrossDomain);
+app.use("/answers", answerRouter, limiter, allowCrossDomain);
+app.use("/logs", logsRouter, limiter, allowCrossDomain);
+app.use("/roles", roleRouter, limiter, allowCrossDomain);
+app.use("/formuserprogress", formUserProgressRouter, limiter, allowCrossDomain);
+app.use("/tokens", tokenRouter, limiter, allowCrossDomain);
 
 
 // catch 404 and forward to error handler
