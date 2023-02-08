@@ -21,6 +21,11 @@ router.get('/', function(req, res, next) {
 
 router.get('/get', async(req,res,next) => {
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if(!incomingToken){
+    res.status(StatusCodes.BAD_REQUEST).json({message: "Missing token"})
+    return
+  }
   
   if (!await Token.tokenExists(incomingToken)) {
     res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
