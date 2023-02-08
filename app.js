@@ -3,6 +3,14 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var rateLimit = require ('express-rate-limit')
+
+const limiter = rateLimit({
+	windowMs: process.env.REQUEST_TIME_WINDOW_MS, // 15 minutes
+	max: process.env.MAX_REQUESTS_PER_WINDOW, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+})
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -27,16 +35,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use("/formations", formationsRouter);
-app.use("/chapitres", chapitreRouter);
-app.use("/exercices", exerciceRouter);
-app.use("/answers", answerRouter);
-app.use("/logs", logsRouter);
-app.use("/roles", roleRouter);
-app.use("/formuserprogress", formUserProgressRouter);
-app.use("/tokens", tokenRouter);
+app.use('/', indexRouter, limiter);
+app.use('/users', usersRouter, limiter);
+app.use("/formations", formationsRouter, limiter);
+app.use("/chapitres", chapitreRouter, limiter);
+app.use("/exercices", exerciceRouter, limiter);
+app.use("/answers", answerRouter, limiter);
+app.use("/logs", logsRouter, limiter);
+app.use("/roles", roleRouter, limiter);
+app.use("/formuserprogress", formUserProgressRouter, limiter);
+app.use("/tokens", tokenRouter, limiter);
 
 
 // catch 404 and forward to error handler

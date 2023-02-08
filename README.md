@@ -17,6 +17,8 @@ DB_NAME='database_development'
 PORT='80'
 SECRET_KEY='config/JwtKeys/private.pem'
 TOKEN_DURABILITY='60000'
+MAX_REQUESTS_PER_WINDOW='100'
+REQUEST_TIME_WINDOW_MS='60000'
 ```
 > WARNING: Write environment Variables between: "
 
