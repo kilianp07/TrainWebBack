@@ -157,10 +157,10 @@ router.post('/login', async(req,res,next) => {
   let user
   // this block allows the user to log in with either his email or his password, both do not need to be filled in
   switch(true)  {
-    case await User.userExists(incomingUser.email, "email") && incomingUser.password != null:
+    case (incomingUser.email != undefined) &&  (await User.userExists(incomingUser.email, "email") && incomingUser.password != null):
       user = await User.findOne({ where: { email: incomingUser.email } })
       break;
-    case await User.userExists(incomingUser.username, "username") && incomingUser.password != null:
+    case (incomingUser.username != undefined) && (await User.userExists(incomingUser.username, "username") && incomingUser.password != null):
       user = await User.findOne({ where: { username: incomingUser.username } })
       break;
     default:
