@@ -8,18 +8,27 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   }
 )
 const Chapitre = require('../models/chapitre')(sequelize, Sequelize.DataTypes,Sequelize.Model);
-const Exercice = require('../models/exercice')(sequelize, Sequelize.DataTypes,Sequelize.Model);
 var router = express.Router();
 
 const create = async (chapter) => {
   try {
-  const createdChapter = await Chapitre.create(chapter)
   } catch (error) {
   console.log(error)
   }
 };
 
 router.get('/getbyid/:id', async(req, res, next) => {
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
   const id = req.params.id;
   const chapitre = await Chapitre.findOne({where: {id: id}});
   if(chapitre == null) {
@@ -29,6 +38,17 @@ router.get('/getbyid/:id', async(req, res, next) => {
 });
 
 router.get('/getall', async(req, res, next) => {
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
   const chapitres = await Chapitre.findAll({where : isDeleted = false});
   if(chapitres.length == 0) {
     res.status(StatusCodes.NOT_FOUND).json({message: "No chapters found"})
@@ -37,6 +57,17 @@ router.get('/getall', async(req, res, next) => {
 });
 
 router.put('/update/:id', async(req, res, next) => {
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
   const id = req.params.id;
   const chapitre = await Chapitre.findOne({where: {id: id}});
   if(chapitre == null) {
@@ -47,6 +78,17 @@ router.put('/update/:id', async(req, res, next) => {
 });
 
 router.delete('/delete/:id', async(req, res, next) => {
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
   const id = req.params.id;
   const chapitre = await Chapitre.findOne({where: {id: id}});
   if(chapitre == null) {
@@ -61,6 +103,17 @@ router.delete('/delete/:id', async(req, res, next) => {
 });
 
 router.delete('/harddelete/:id', async(req, res, next) => {
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
   const id = req.params.id;
   const chapitre = await Chapitre.findOne({where: {id: id}});
   if(chapitre == null) {
@@ -71,6 +124,17 @@ router.delete('/harddelete/:id', async(req, res, next) => {
 });
 
 router.post('/create', async(req,res,next) => {
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
   if (Chapitre.incomingCorrectlyFilled(req.body.Chapitre) == false) {
      res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
      return
