@@ -18,7 +18,7 @@ PORT='80'
 SECRET_KEY='config/JwtKeys/private.pem'
 TOKEN_DURABILITY='60000'
 ```
-> ATTENTION: Write environment Variables between: "
+> WARNING: Write environment Variables between: "
 
 
 Generate a key pair for JWT authentication:
@@ -26,7 +26,7 @@ Generate a key pair for JWT authentication:
 ```bash
 openssl rand 128 > config/JwtKeys/private.pem
 ```
-> ATTENTION: Create the config directory config/JwtKeys
+> WARNING: Create the config directory config/JwtKeys
 
 Create your database with:
 ```bash
