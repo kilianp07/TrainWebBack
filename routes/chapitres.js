@@ -1,6 +1,7 @@
 require('dotenv').config()
 var express = require('express');
 const StatusCodes = require('http-status-codes');
+const ChapitreDTO = require('../dto/ChapitreDTO');
 const { Sequelize, Model, DataTypes, TimeoutError } = require("sequelize");
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, 
   {
@@ -141,6 +142,22 @@ router.post('/create', async(req,res,next) => {
    }
    const createdChapitre = await create(req.body.Chapitre)
    res.status(StatusCodes.CREATED).json({createdChapitre, message: "Chapter created"})
+});
+
+
+router.get('/getallwithexercices', async(req, res, next) => {
+  const chapitres = await Chapitre.findAll({where : isDeleted = false});
+  if(chapitres.length == 0) {
+    res.status(StatusCodes.NOT_FOUND).json({message: "No chapters found"})
+    return
+  };
+
+  FoundChapitres = []
+  for(i = 0; i < chapitres.length; i++) {
+     FoundChapitres.push(new ChapitreDTO(chapitres[i]));
+  }
+
+  res.status(StatusCodes.OK).json({FoundChapitres});
 });
 
 module.exports = router;
