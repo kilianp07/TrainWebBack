@@ -6,16 +6,6 @@ var logger = require('morgan');
 var rateLimit = require ('express-rate-limit')
 var cors = require('cors')
 
-var whitelist = [
-  'http://0.0.0.0:4200',
-];
-var corsOptions = {
-  origin: function(origin, callback){
-      var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
-      callback(null, originIsWhitelisted);
-  },
-  credentials: true
-};
 
 const limiter = rateLimit({
 	windowMs: process.env.REQUEST_TIME_WINDOW_MS, // 15 minutes
@@ -37,14 +27,6 @@ var tokenRouter = require('./routes/token');
 
 var app = express();
 
-//CORS middleware
-var allowCrossDomain = function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', 'example.com');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-
-  next();
-}
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -56,16 +38,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter, limiter, allowCrossDomain);
-app.use('/users', usersRouter, limiter, allowCrossDomain);
-app.use("/formations", formationsRouter, limiter, allowCrossDomain);
-app.use("/chapitres", chapitreRouter, limiter, allowCrossDomain);
-app.use("/exercices", exerciceRouter, limiter, allowCrossDomain);
-app.use("/answers", answerRouter, limiter, allowCrossDomain);
-app.use("/logs", logsRouter, limiter, allowCrossDomain);
-app.use("/roles", roleRouter, limiter, allowCrossDomain);
-app.use("/formuserprogress", formUserProgressRouter, limiter, allowCrossDomain);
-app.use("/tokens", tokenRouter, limiter, allowCrossDomain);
+app.use('/', indexRouter, limiter, cors());
+app.use('/users', usersRouter, limiter, cors());
+app.use("/formations", formationsRouter, limiter, cors());
+app.use("/chapitres", chapitreRouter, limiter, cors());
+app.use("/exercices", exerciceRouter, limiter, cors());
+app.use("/answers", answerRouter, limiter, cors());
+app.use("/logs", logsRouter, limiter, cors());
+app.use("/roles", roleRouter, limiter, cors());
+app.use("/formuserprogress", formUserProgressRouter, limiter, cors());
+app.use("/tokens", tokenRouter, limiter, cors());
 
 
 // catch 404 and forward to error handler
