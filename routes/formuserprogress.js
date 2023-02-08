@@ -11,7 +11,18 @@ const FormUserProgress = require('../models/formuserprogress')(sequelize, Sequel
 var router = express.Router();
 
 router.get('/getbyid/:id', async(req, res, next) => {
-    const id = req.params.id;
+    incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
+  const id = req.params.id;
     const formuserprogress = await FormUserProgress.findOne({where: {id: id}});
     if(formuserprogress == null) {
         res.status(StatusCodes.NOT_FOUND).json({message: "FormUserProgress not found"})
@@ -20,7 +31,18 @@ router.get('/getbyid/:id', async(req, res, next) => {
 });
 
 router.get('/getall', async(req, res, next) => {
-    const formuserprogresses = await FormUserProgress.findAll({where : {isDeleted: false}});
+    incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
+  const formuserprogresses = await FormUserProgress.findAll({where : {isDeleted: false}});
     if(formuserprogresses.length == 0) {
         res.status(StatusCodes.NOT_FOUND).json({message: "No FormUserProgresses found"})
         return};
@@ -28,7 +50,18 @@ router.get('/getall', async(req, res, next) => {
 });
 
 router.put('/update/:id', async(req, res, next) => {
-    const id = req.params.id;
+    incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
+  const id = req.params.id;
     const formuserprogress = await FormUserProgress.findOne({where: {id: id}});
     if(formuserprogress == null) {
         res.status(StatusCodes.NOT_FOUND).json({message: "FormUserProgress not found"})
@@ -41,7 +74,18 @@ router.put('/update/:id', async(req, res, next) => {
 });
 
 router.delete('/delete/:id', async(req, res, next) => {
-    const id = req.params.id;
+    incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
+  const id = req.params.id;
     const formuserprogress = await FormUserProgress.findOne({where: {id: id}});
     if(formuserprogress == null) {
         res.status(StatusCodes.NOT_FOUND).json({message: "FormUserProgress not found"})
@@ -54,7 +98,18 @@ router.delete('/delete/:id', async(req, res, next) => {
 });
 
 router.delete('/harddelete/:id', async(req, res, next) => {
-    const id = req.params.id;
+    incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
+  const id = req.params.id;
     const formuserprogress = await FormUserProgress.findOne({where: {id: id}});
     if(formuserprogress == null) {
         res.status(StatusCodes.NOT_FOUND).json({message: "FormUserProgress not found"})
@@ -64,7 +119,18 @@ router.delete('/harddelete/:id', async(req, res, next) => {
 });
 
 router.post('/create', async(req, res, next) => {
-    if(!FormUserProgress.incomingCorrectlyFilled(req.body.FormUserProgress)){
+    incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
+  if(!FormUserProgress.incomingCorrectlyFilled(req.body.FormUserProgress)){
         res.status(StatusCodes.BAD_REQUEST).json({message: "FormUserProgress not correctly filled"});
         return;
     }
