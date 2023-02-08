@@ -19,6 +19,44 @@ router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
+router.get('/get', async(req,res,next) => {
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+  if(!User.incomingCorrectlyFilled(incomingUser) && incomingUser.role == null) {
+    res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
+    return
+  }
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
+  
+  // If user related to token doesn't exists
+  const token = await Token.findOne({ where: { token: incomingToken } })
+  if (!await User.userExists(token.idUser, "id")) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "User not found"})
+    return
+  }  
+
+  let user
+  try{
+    user = User.findOne({ where: { id: token.idUser } })
+  }catch(err){
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message})
+    return
+  }
+
+  res.status(StatusCodes.OK).json({user, message: "User found"})
+});
+
+
+
+
 router.post('/student/create', async(req,res,next) => {
    const salt = await bcrypt.genSalt(10);
    const incomingUser = req.body.user
