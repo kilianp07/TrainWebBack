@@ -6,6 +6,17 @@ var logger = require('morgan');
 var rateLimit = require ('express-rate-limit')
 var cors = require('cors')
 
+var whitelist = [
+  'http://0.0.0.0:4200',
+];
+var corsOptions = {
+  origin: function(origin, callback){
+      var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+      callback(null, originIsWhitelisted);
+  },
+  credentials: true
+};
+
 const limiter = rateLimit({
 	windowMs: process.env.REQUEST_TIME_WINDOW_MS, // 15 minutes
 	max: process.env.MAX_REQUESTS_PER_WINDOW, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
@@ -36,16 +47,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter, limiter, cors());
-app.use('/users', usersRouter, limiter, cors());
-app.use("/formations", formationsRouter, limiter, cors());
-app.use("/chapitres", chapitreRouter, limiter, cors());
-app.use("/exercices", exerciceRouter, limiter, cors());
-app.use("/answers", answerRouter, limiter, cors());
-app.use("/logs", logsRouter, limiter, cors());
-app.use("/roles", roleRouter, limiter, cors());
-app.use("/formuserprogress", formUserProgressRouter, limiter, cors());
-app.use("/tokens", tokenRouter, limiter, cors());
+app.use('/', indexRouter, limiter, cors(corsOptions));
+app.use('/users', usersRouter, limiter, cors(corsOptions));
+app.use("/formations", formationsRouter, limiter, cors(corsOptions));
+app.use("/chapitres", chapitreRouter, limiter, cors(corsOptions));
+app.use("/exercices", exerciceRouter, limiter, cors(corsOptions));
+app.use("/answers", answerRouter, limiter, cors(corsOptions));
+app.use("/logs", logsRouter, limiter, cors(corsOptions));
+app.use("/roles", roleRouter, limiter, cors(corsOptions));
+app.use("/formuserprogress", formUserProgressRouter, limiter, cors(corsOptions));
+app.use("/tokens", tokenRouter, limiter, cors(corsOptions));
 
 
 // catch 404 and forward to error handler
