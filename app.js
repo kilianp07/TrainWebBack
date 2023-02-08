@@ -36,16 +36,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter, limiter, cors);
-app.use('/users', usersRouter, limiter, cors);
-app.use("/formations", formationsRouter, limiter, cors);
-app.use("/chapitres", chapitreRouter, limiter, cors);
-app.use("/exercices", exerciceRouter, limiter, cors);
-app.use("/answers", answerRouter, limiter, cors);
-app.use("/logs", logsRouter, limiter, cors);
-app.use("/roles", roleRouter, limiter, cors);
-app.use("/formuserprogress", formUserProgressRouter, limiter, cors);
-app.use("/tokens", tokenRouter, limiter, cors);
+app.use('/', indexRouter, limiter, cors());
+app.use('/users', usersRouter, limiter, cors());
+app.use("/formations", formationsRouter, limiter, cors());
+app.use("/chapitres", chapitreRouter, limiter, cors());
+app.use("/exercices", exerciceRouter, limiter, cors());
+app.use("/answers", answerRouter, limiter, cors());
+app.use("/logs", logsRouter, limiter, cors());
+app.use("/roles", roleRouter, limiter, cors());
+app.use("/formuserprogress", formUserProgressRouter, limiter, cors());
+app.use("/tokens", tokenRouter, limiter, cors());
 
 
 // catch 404 and forward to error handler
