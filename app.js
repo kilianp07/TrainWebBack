@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var rateLimit = require ('express-rate-limit')
+var cors = require('cors')
 
 const limiter = rateLimit({
 	windowMs: process.env.REQUEST_TIME_WINDOW_MS, // 15 minutes
@@ -35,16 +36,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter, limiter);
-app.use('/users', usersRouter, limiter);
-app.use("/formations", formationsRouter, limiter);
-app.use("/chapitres", chapitreRouter, limiter);
-app.use("/exercices", exerciceRouter, limiter);
-app.use("/answers", answerRouter, limiter);
-app.use("/logs", logsRouter, limiter);
-app.use("/roles", roleRouter, limiter);
-app.use("/formuserprogress", formUserProgressRouter, limiter);
-app.use("/tokens", tokenRouter, limiter);
+app.use('/', indexRouter, limiter, cors);
+app.use('/users', usersRouter, limiter, cors);
+app.use("/formations", formationsRouter, limiter, cors);
+app.use("/chapitres", chapitreRouter, limiter, cors);
+app.use("/exercices", exerciceRouter, limiter, cors);
+app.use("/answers", answerRouter, limiter, cors);
+app.use("/logs", logsRouter, limiter, cors);
+app.use("/roles", roleRouter, limiter, cors);
+app.use("/formuserprogress", formUserProgressRouter, limiter, cors);
+app.use("/tokens", tokenRouter, limiter, cors);
 
 
 // catch 404 and forward to error handler
