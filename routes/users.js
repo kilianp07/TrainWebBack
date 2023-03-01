@@ -56,8 +56,6 @@ router.get('/get', async(req,res,next) => {
 });
 
 
-
-
 router.post('/student/create', async(req,res,next) => {
    const salt = await bcrypt.genSalt(10);
    const incomingUser = req.body.user
