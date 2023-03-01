@@ -3,7 +3,7 @@ var express = require('express');
 const StatusCodes = require('http-status-codes');
 const bcrypt = require("bcrypt");
 const { Sequelize, Model, DataTypes, TimeoutError } = require("sequelize");
-const sequelize = new Sequelize('database_development', process.env.DB_USER, process.env.DB_PASSWORD,
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD,
   {
   dialect: 'mysql'
   }
@@ -23,24 +23,24 @@ router.get('/get', async(req,res,next) => {
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
   if(!incomingToken){
-    res.status(StatusCodes.BAD_REQUEST).json({message: "Missing token"})
+    res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing token"})
     return
   }
   
   if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
     return
   }
 
   if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
     return
   }
   
   // If user related to token doesn't exists
   const token = await Token.findOne({ where: { token: incomingToken } })
   if (!await User.userExists(token.idUser, "id")) {
-    res.status(StatusCodes.NO_CONTENT).json({message: "User not found"})
+    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "User not found"})
     return
   }  
 
@@ -48,11 +48,11 @@ router.get('/get', async(req,res,next) => {
   try{
     user = User.findOne({ where: { id: token.idUser } })
   }catch(err){
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message})
+    res.status(StatusCodes.StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message})
     return
   }
 
-  res.status(StatusCodes.OK).json({user, message: "User found"})
+  res.status(StatusCodes.StatusCodes.OK).json({user, message: "User found"})
 });
 
 
@@ -64,17 +64,17 @@ router.post('/student/create', async(req,res,next) => {
 
    // Check if all parameters are filled
    if (!User.incomingCorrectlyFilled(incomingUser)) {
-      res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
+      res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
       return
     }
   
     // Check if user already exists
     if (await User.userExists(incomingUser.email, "email")) {
-      res.status(StatusCodes.CONFLICT).json({ message: "Email is already used"})
+      res.status(StatusCodes.StatusCodes.CONFLICT).json({ message: "Email is already used"})
       return
     }
     if (await User.userExists(incomingUser.username, "username")) {
-      res.status(StatusCodes.CONFLICT).json({ message: "Username is already used"})
+      res.status(StatusCodes.StatusCodes.CONFLICT).json({ message: "Username is already used"})
       return
     }
   
@@ -87,31 +87,31 @@ router.post('/student/create', async(req,res,next) => {
       role: "STUDENT"
     }
     const createdUser = await User.create(usr)
-    res.status(StatusCodes.CREATED).json({createdUser, message: "User created"})
+    res.status(StatusCodes.StatusCodes.CREATED).json({createdUser, message: "User created"})
 });
 
 router.post('/teacher/create', async(req,res,next) => {
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
   if(!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.UNAUTHORIZED).json({message: "You must be connected"})
+    res.status(StatusCodes.StatusCodes.UNAUTHORIZED).json({message: "You must be connected"})
     return
   }
 
   if(!await Token.verifyToken(incomingToken)) {
-    res.status(StatusCodes.UNAUTHORIZED).json({message: "You must be connected"})
+    res.status(StatusCodes.StatusCodes.UNAUTHORIZED).json({message: "You must be connected"})
     return
   }
   
   token = await Token.findOne({ where: { token: incomingToken } })
   if(!await User.userExists(token.idUser, "id")) {
-    res.status(StatusCodes.UNAUTHORIZED).json({message: "Unrecognized user"})
+    res.status(StatusCodes.StatusCodes.UNAUTHORIZED).json({message: "Unrecognized user"})
     return
   }
 
     const user = await User.findOne({ where: { id: token.idUser } })
     if(user.role != "ADMIN" || user.role != "TEACHER") {
-      res.status(StatusCodes.FORBIDDEN).json({message: "You must be an admin or a teacher to create a teacher"})
+      res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "You must be an admin or a teacher to create a teacher"})
       return
     }
 
@@ -120,17 +120,17 @@ router.post('/teacher/create', async(req,res,next) => {
 
     // Check if all parameters are filled
     if(!User.incomingCorrectlyFilled(incomingUser)) {
-      res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
+      res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
       return
     }
 
     // Check if user already exists
     if (await User.userExists(incomingUser.email, "email")) {
-      res.status(StatusCodes.CONFLICT).json({ message: "Email is already used"})
+      res.status(StatusCodes.StatusCodes.CONFLICT).json({ message: "Email is already used"})
       return
     }
     if (await User.userExists(incomingUser.username, "username")) {
-      res.status(StatusCodes.CONFLICT).json({ message: "Username is already used"})
+      res.status(StatusCodes.StatusCodes.CONFLICT).json({ message: "Username is already used"})
       return
     }
 
@@ -143,14 +143,14 @@ router.post('/teacher/create', async(req,res,next) => {
       role: "TEACHER"
     }
     const createdUser = await User.create(usr)
-    res.status(StatusCodes.CREATED).json({createdUser, message: "User created"})
+    res.status(StatusCodes.StatusCodes.CREATED).json({createdUser, message: "User created"})
 });
 
 router.post('/login', async(req,res,next) => {
   const incomingUser = req.body.user
   
   if(!await User.userExists(incomingUser.email, "email") && !await User.userExists(incomingUser.username, "username")) {
-    res.status(StatusCodes.NO_CONTENT).json({message: "User not found"})
+    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "User not found"})
     return
   }
 
@@ -164,19 +164,19 @@ router.post('/login', async(req,res,next) => {
       user = await User.findOne({ where: { username: incomingUser.username } })
       break;
     default:
-      res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid entry"})
+      res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Invalid entry"})
       return
   }
 
   const validPassword = await bcrypt.compare(incomingUser.password, user.password)
   if (!validPassword) {
-    res.status(StatusCodes.UNAUTHORIZED).json({message: "Invalid password"})
+    res.status(StatusCodes.StatusCodes.UNAUTHORIZED).json({message: "Invalid password"})
     return
   }
 
   // Create token
   const createdToken = await Token.generate(user.id)
-  res.status(StatusCodes.OK).json({createdToken, message: "User logged in"})
+  res.status(StatusCodes.StatusCodes.OK).json({createdToken, message: "User logged in"})
 });
 
 router.put('/update', async(req,res,next) => {
@@ -185,24 +185,24 @@ router.put('/update', async(req,res,next) => {
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
   if(!User.incomingCorrectlyFilled(incomingUser) && incomingUser.role == null) {
-    res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
+    res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
     return
   }
 
   if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
     return
   }
 
   if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
     return
   }
   
   // If user related to token doesn't exists
   const token = await Token.findOne({ where: { token: incomingToken } })
   if (!await User.userExists(token.idUser, "id")) {
-    res.status(StatusCodes.NO_CONTENT).json({message: "User not found"})
+    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "User not found"})
     return
   }  
 
@@ -210,32 +210,32 @@ router.put('/update', async(req,res,next) => {
   try{
     updatedUser = User.updateUser(incomingUser, token.idUser)
   }catch(err){
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message})
+    res.status(StatusCodes.StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message})
     return
   }
 
-  res.status(StatusCodes.OK).json({user: await updatedUser, message: "User updated"})
+  res.status(StatusCodes.StatusCodes.OK).json({user: await updatedUser, message: "User updated"})
 });
 
 router.post('/logout', async(req,res,next) => {
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
   if(!incomingToken){
-    res.status(StatusCodes.BAD_REQUEST).json({message: "Missing token"})
+    res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing token"})
     return
   }
 
   if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
     return
   }
 
   try{
     await Token.deprecate(incomingToken)
   }catch(err){
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message})
+    res.status(StatusCodes.StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message})
     return
   }
-  res.status(StatusCodes.OK).json({message: "User logged out"})
+  res.status(StatusCodes.StatusCodes.OK).json({message: "User logged out"})
 });
 module.exports = router;
