@@ -9,6 +9,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   }
 )
 const User = require('../models/user')(sequelize, Sequelize.DataTypes,Sequelize.Model);
+const Role = require('./answer')(sequelize, Sequelize.DataTypes,Sequelize.Model);
 const Token = require('../models/token')(sequelize, Sequelize.DataTypes,Sequelize.Model);
 
 
@@ -108,7 +109,8 @@ router.post('/teacher/create', async(req,res,next) => {
   }
 
     const user = await User.findOne({ where: { id: token.idUser } })
-    if(user.role != "ADMIN" || user.role != "TEACHER") {
+    const role = await Role.findOne({ where: { id: user.idRole } })
+    if(role.value != "ADMIN" || role.value != "TEACHER") {
       res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "You must be an admin or a teacher to create a teacher"})
       return
     }
@@ -177,7 +179,7 @@ router.put('/update', async(req,res,next) => {
   const incomingUser = req.body.user
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
-  if(!User.incomingCorrectlyFilled(incomingUser) && incomingUser.role == null) {
+  if(!User.incomingCorrectlyFilled(incomingUser)) {
     res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
     return
   }

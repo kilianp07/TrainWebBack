@@ -25,10 +25,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.BOOLEAN
       },
-      Role:
+      idRole:
       {
         allowNull : false,
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
