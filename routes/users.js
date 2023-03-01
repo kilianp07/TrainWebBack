@@ -103,7 +103,7 @@ router.post('/teacher/create', async(req,res,next) => {
     return
   }
   
-  token = await Token.findOne({ where: { token: incomingToken } })
+  let token = await Token.findOne({ where: { token: incomingToken } })
   if(!await User.userExists(token.idUser, "id")) {
     res.status(StatusCodes.StatusCodes.UNAUTHORIZED).json({message: "Unrecognized user"})
     return
@@ -149,25 +149,20 @@ router.post('/teacher/create', async(req,res,next) => {
 router.post('/login', async(req,res,next) => {
   const incomingUser = req.body.user
   
-  if(!await User.userExists(incomingUser.email, "email") && !await User.userExists(incomingUser.username, "username")) {
+  if(!await User.userExists(incomingUser.email, "email")) {
     res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "User not found"})
     return
   }
 
   let user
-  // this block allows the user to log in with either his email or his password, both do not need to be filled in
-  switch(true)  {
-    case (incomingUser.email != undefined) &&  (await User.userExists(incomingUser.email, "email") && incomingUser.password != null):
-      user = await User.findOne({ where: { email: incomingUser.email } })
-      break;
-    case (incomingUser.username != undefined) && (await User.userExists(incomingUser.username, "username") && incomingUser.password != null):
-      user = await User.findOne({ where: { username: incomingUser.username } })
-      break;
-    default:
-      res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Invalid entry"})
-      return
+  try{
+    user = await User.findOne({ where: { email: incomingUser.email } })
+  }catch(err){
+    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: err.message})
+    return
   }
-
+  
+  // Check if password is correct
   const validPassword = await bcrypt.compare(incomingUser.password, user.password)
   if (!validPassword) {
     res.status(StatusCodes.StatusCodes.UNAUTHORIZED).json({message: "Invalid password"})
