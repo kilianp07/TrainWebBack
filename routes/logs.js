@@ -19,6 +19,17 @@ const create = async (log) => {
   };
 
 router.get('/getbyid/:id', async(req, res, next) => {
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
   const id = req.params.id;
   const log = await Logs.findOne({where: {id: id}});
   if(log == null) {
@@ -28,6 +39,17 @@ router.get('/getbyid/:id', async(req, res, next) => {
 });
 
 router.get('/getall', async(req, res, next) => {
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
   const logs = await Logs.findAll({where : isDeleted = false});
   if(logs.length == 0) {
     res.status(StatusCodes.NOT_FOUND).json({message: "No logs found"})
@@ -36,6 +58,17 @@ router.get('/getall', async(req, res, next) => {
 });
 
 router.delete('/delete/:id', async(req, res, next) => {
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
   const id = req.params.id;
   const log = await Logs.findOne({where: {id: id}});
   if(log == null) {
@@ -49,6 +82,17 @@ router.delete('/delete/:id', async(req, res, next) => {
 });
 
 router.delete('/harddelete/:id', async(req, res, next) => {
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
   const id = req.params.id;
   const log = await Logs.findOne({where: {id: id}});
   if(log == null) {
@@ -59,6 +103,17 @@ router.delete('/harddelete/:id', async(req, res, next) => {
 });
 
 router.post('/create', async(req, res, next) => {
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
   if (Logs.incomingCorrectlyFilled(req.body.Logs) == false) {
     res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
     return

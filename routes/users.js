@@ -19,6 +19,45 @@ router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
+router.get('/get', async(req,res,next) => {
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if(!incomingToken){
+    res.status(StatusCodes.BAD_REQUEST).json({message: "Missing token"})
+    return
+  }
+  
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
+  
+  // If user related to token doesn't exists
+  const token = await Token.findOne({ where: { token: incomingToken } })
+  if (!await User.userExists(token.idUser, "id")) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "User not found"})
+    return
+  }  
+
+  let user
+  try{
+    user = User.findOne({ where: { id: token.idUser } })
+  }catch(err){
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message})
+    return
+  }
+
+  res.status(StatusCodes.OK).json({user, message: "User found"})
+});
+
+
+
+
 router.post('/student/create', async(req,res,next) => {
    const salt = await bcrypt.genSalt(10);
    const incomingUser = req.body.user
@@ -118,10 +157,10 @@ router.post('/login', async(req,res,next) => {
   let user
   // this block allows the user to log in with either his email or his password, both do not need to be filled in
   switch(true)  {
-    case await User.userExists(incomingUser.email, "email") && incomingUser.password != null:
+    case (incomingUser.email != undefined) &&  (await User.userExists(incomingUser.email, "email") && incomingUser.password != null):
       user = await User.findOne({ where: { email: incomingUser.email } })
       break;
-    case await User.userExists(incomingUser.username, "username") && incomingUser.password != null:
+    case (incomingUser.username != undefined) && (await User.userExists(incomingUser.username, "username") && incomingUser.password != null):
       user = await User.findOne({ where: { username: incomingUser.username } })
       break;
     default:

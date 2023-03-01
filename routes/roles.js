@@ -19,7 +19,18 @@ const create = async (role) => {
 };
 
 router.get('/getbyid/:id', async(req, res, next) => {
-    const id = req.params.id;
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
+  const id = req.params.id;
     const role = await Role.findOne({where: {id: id}});
     if(role == null) {
       res.status(StatusCodes.NOT_FOUND).json({message: "Role not found"})
@@ -28,7 +39,18 @@ router.get('/getbyid/:id', async(req, res, next) => {
 });
 
 router.get('/getall', async(req, res, next) => {
-    const roles = await Role.findAll({where : {isDeleted: false}});
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
+  const roles = await Role.findAll({where : {isDeleted: false}});
     if(roles.length == 0) {
       res.status(StatusCodes.NOT_FOUND).json({message: "No roles found"})
       return};
@@ -36,7 +58,18 @@ router.get('/getall', async(req, res, next) => {
 });
 
 router.delete('/delete/:id', async(req, res, next) => {
-    const id = req.params.id;
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
+  const id = req.params.id;
     const role = await Role.findOne({where: {id: id}});
     if(role == null) {
       res.status(StatusCodes.NOT_FOUND).json({message: "Role not found"})
@@ -50,7 +83,18 @@ router.delete('/delete/:id', async(req, res, next) => {
   });
   
   router.delete('/harddelete/:id', async(req, res, next) => {
-    const id = req.params.id;
+    incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
+  const id = req.params.id;
     const role = await Role.findOne({where: {id: id}});
     if(role == null) {
       res.status(StatusCodes.NOT_FOUND).json({message: "Role not found"})
@@ -60,7 +104,18 @@ router.delete('/delete/:id', async(req, res, next) => {
   });
 
   router.post('/create', async(req,res,next) => {
-    if (Role.incomingCorrectlyFilled(req.body.Role) == false) {
+    incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
+  if (Role.incomingCorrectlyFilled(req.body.Role) == false) {
        res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
        return
      }
@@ -69,7 +124,18 @@ router.delete('/delete/:id', async(req, res, next) => {
   });
 
   router.put('/update/:id', async(req, res, next) => {
-    const id = req.params.id;
+    incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
+  const id = req.params.id;
     const role = await Role.findOne({where: {id: id}});
     if(role == null) {
       res.status(StatusCodes.NOT_FOUND).json({message: "Role not found"})
