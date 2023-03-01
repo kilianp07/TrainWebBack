@@ -5,6 +5,25 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var rateLimit = require ('express-rate-limit')
 var cors = require('cors')
+const Sentry = require('@sentry/node');
+const Tracing = require("@sentry/tracing");
+
+
+Sentry.init({
+  dsn: "https://8560fc1300d7448d8db839e3d340fe04@o4504762869809152.ingest.sentry.io/4504762909720576",
+  integrations: [
+    // enable HTTP calls tracing
+    new Sentry.Integrations.Http({ tracing: true }),
+    // enable Express.js middleware tracing
+    new Tracing.Integrations.Express({ app }),
+  ],
+
+  // Set tracesSampleRate to 1.0 to capture 100%
+  // of transactions for performance monitoring.
+  // We recommend adjusting this value in production
+  tracesSampleRate: 1.0,
+});
+
 
 
 const limiter = rateLimit({
@@ -27,6 +46,15 @@ var tokenRouter = require('./routes/token');
 
 var app = express();
 
+
+// RequestHandler creates a separate execution context using domains, so that every
+// transaction/span/breadcrumb is attached to its own Hub instance
+app.use(Sentry.Handlers.requestHandler());
+// TracingHandler creates a trace for every incoming request
+app.use(Sentry.Handlers.tracingHandler());
+
+// The error handler must be before any other error middleware and after all controllers
+app.use(Sentry.Handlers.errorHandler());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
