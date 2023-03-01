@@ -146,6 +146,18 @@ router.post('/create', async(req,res,next) => {
 
 
 router.get('/getallwithexercices', async(req, res, next) => {
+  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+
+  if (!await Token.tokenExists(incomingToken)) {
+    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    return
+  }
+
+  if(!await Token.verify(incomingToken)){
+    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    return
+  }
+  
   const chapitres = await Chapitre.findAll({where : isDeleted = false});
   if(chapitres.length == 0) {
     res.status(StatusCodes.StatusCodes.NOT_FOUND).json({message: "No chapters found"})
