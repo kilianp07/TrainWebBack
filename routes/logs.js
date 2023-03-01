@@ -22,104 +22,104 @@ router.get('/getbyid/:id', async(req, res, next) => {
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
   if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
     return
   }
 
   if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
     return
   }
   const id = req.params.id;
   const log = await Logs.findOne({where: {id: id}});
   if(log == null) {
-    res.status(StatusCodes.NOT_FOUND).json({message: "Log not found"})
+    res.status(StatusCodes.StatusCodes.NOT_FOUND).json({message: "Log not found"})
     return};
-  res.status(StatusCodes.OK).json({log});
+  res.status(StatusCodes.StatusCodes.OK).json({log});
 });
 
 router.get('/getall', async(req, res, next) => {
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
   if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
     return
   }
 
   if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
     return
   }
   const logs = await Logs.findAll({where : isDeleted = false});
   if(logs.length == 0) {
-    res.status(StatusCodes.NOT_FOUND).json({message: "No logs found"})
+    res.status(StatusCodes.StatusCodes.NOT_FOUND).json({message: "No logs found"})
     return};
-  res.status(StatusCodes.OK).json({logs});
+  res.status(StatusCodes.StatusCodes.OK).json({logs});
 });
 
 router.delete('/delete/:id', async(req, res, next) => {
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
   if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
     return
   }
 
   if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
     return
   }
   const id = req.params.id;
   const log = await Logs.findOne({where: {id: id}});
   if(log == null) {
-    res.status(StatusCodes.NOT_FOUND).json({message: "Log not found"})
+    res.status(StatusCodes.StatusCodes.NOT_FOUND).json({message: "Log not found"})
     return};
   if(log.isDeleted == true) {
-    res.status(StatusCodes.BAD_REQUEST).json({message: "Log already deleted"})
+    res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Log already deleted"})
     return};
   await Logs.update({isDeleted: true}, {where: {id: id}});
-  res.status(StatusCodes.OK).json({message: "Log deleted"});
+  res.status(StatusCodes.StatusCodes.OK).json({message: "Log deleted"});
 });
 
 router.delete('/harddelete/:id', async(req, res, next) => {
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
   if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
     return
   }
 
   if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
     return
   }
   const id = req.params.id;
   const log = await Logs.findOne({where: {id: id}});
   if(log == null) {
-    res.status(StatusCodes.NOT_FOUND).json({message: "Log not found"})
+    res.status(StatusCodes.StatusCodes.NOT_FOUND).json({message: "Log not found"})
     return};
   await Logs.destroy({where: {id: id}});
-  res.status(StatusCodes.OK).json({message: "Log deleted from database"});
+  res.status(StatusCodes.StatusCodes.OK).json({message: "Log deleted from database"});
 });
 
 router.post('/create', async(req, res, next) => {
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
   if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.NO_CONTENT).json({message: "Token not found"})
+    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
     return
   }
 
   if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.FORBIDDEN).json({message: "Invalid token"})
+    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
     return
   }
   if (Logs.incomingCorrectlyFilled(req.body.Logs) == false) {
-    res.status(StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
+    res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
     return
   }
   const createdLog = await create(req.body.Logs)
-  res.status(StatusCodes.CREATED).json({createdLog, message: "Logs created"})
+  res.status(StatusCodes.StatusCodes.CREATED).json({createdLog, message: "Logs created"})
 });
 
 module.exports = router;
