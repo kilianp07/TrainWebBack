@@ -74,3 +74,6 @@ jobs:
       uses: github/codeql-action/analyze@v2
       with:
         category: "/language:${{matrix.language}}"
+
+    - name: Auto-generate CHANGELOG
+      uses: BobAnkh/auto-generate-changelog@v1.2.4
