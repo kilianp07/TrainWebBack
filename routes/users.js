@@ -156,7 +156,7 @@ router.post('/login', async(req,res,next) => {
 
   let user
   try{
-    user = User.findOne({ where: { email: incomingUser.email } })
+    user = await User.findOne({ where: { email: incomingUser.email } })
   }catch(err){
     res.status(StatusCodes.NO_CONTENT).json({message: err.message})
     return
