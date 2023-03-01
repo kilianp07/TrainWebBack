@@ -8,6 +8,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   }
 )
 const Logs = require('../models/logs')(sequelize, Sequelize.DataTypes,Sequelize.Model);
+const Token = require('../models/token')(sequelize, Sequelize.DataTypes,Sequelize.Model);
 var router = express.Router();
 
 const create = async (log) => {
@@ -39,8 +40,8 @@ router.get('/getbyid/:id', async(req, res, next) => {
 });
 
 router.get('/getall', async(req, res, next) => {
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
+  incomingToken = req.headers["authorization"] && req.headers["authorization"].split(' ')[1]
+  
   if (!await Token.tokenExists(incomingToken)) {
     res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
     return

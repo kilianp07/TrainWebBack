@@ -9,6 +9,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
 )
 
 const Answer = require('../models/answer')(sequelize, Sequelize.DataTypes,Sequelize.Model);
+const Token = require('../models/token')(sequelize, Sequelize.DataTypes,Sequelize.Model);
 var router = express.Router();
 
 const create = async (answer) => {
