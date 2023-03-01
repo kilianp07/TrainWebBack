@@ -2,6 +2,7 @@ require('dotenv').config()
 var express = require('express');
 const StatusCodes = require('http-status-codes');
 const { Sequelize, Model, DataTypes, TimeoutError } = require("sequelize");
+const ChapitreDTO = require('../dto/ChapitreDTO');
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, 
   {
   dialect: 'mysql'
@@ -153,7 +154,9 @@ router.get('/getallwithexercices', async(req, res, next) => {
 
   FoundChapitres = []
   for(i = 0; i < chapitres.length; i++) {
-     FoundChapitres.push(new ChapitreDTO(chapitres[i]));
+      chaptDto = new ChapitreDTO(chapitres[i])
+      await chaptDto.loadExercices(chapitres[i].id)
+      FoundChapitres.push(chaptDto);
   }
 
   res.status(StatusCodes.OK).json({FoundChapitres});
