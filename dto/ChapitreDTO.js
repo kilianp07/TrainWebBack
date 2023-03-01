@@ -11,16 +11,18 @@ class ChapitreDTO{
     name;
     idFormation;
     isDeleted;
-    exercices;
+    exercices = [];
 
     constructor(Chapitre){
         this.id = Chapitre.id;
         this.name = Chapitre.name;
         this.idFormation = Chapitre.idFormation;
         this.isDeleted = Chapitre.isDeleted;
-        this.exercices = [];
-        Exercice.findAll({where: {idChapitre : this.id, isDeleted : false}}).then(exercices => {
-            this.exercices.push(exercices);
-        });
+    }
+
+    async loadExercices(idChapitre){
+        const exercices = await Exercice.findAll({where: {idChapitre : idChapitre, isDeleted : false}});
+        this.exercices = exercices
     }
 }
+module.exports = ChapitreDTO;
