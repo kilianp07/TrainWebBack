@@ -3,7 +3,7 @@ var express = require('express');
 const StatusCodes = require('http-status-codes');
 const bcrypt = require("bcrypt");
 const { Sequelize, Model, DataTypes, TimeoutError } = require("sequelize");
-const sequelize = new Sequelize('database_development', process.env.DB_USER, process.env.DB_PASSWORD,
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD,
   {
   dialect: 'mysql'
   }
@@ -156,7 +156,9 @@ router.post('/login', async(req,res,next) => {
 
   let user
   try{
+
     user = await User.findOne({ where: { email: incomingUser.email } })
+
   }catch(err){
     res.status(StatusCodes.NO_CONTENT).json({message: err.message})
     return
