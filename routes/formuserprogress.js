@@ -13,7 +13,16 @@ var router = express.Router();
 
 router.get('/getbyid/:id', async(req, res, next) => {
   const id = req.params.id;
-    const formuserprogress = await FormUserProgress.findOne({where: {id: id}});
+    const formuserprogress = await FormUserProgress.findAll({where: {id: id}});
+    if(formuserprogress == null) {
+        res.status(StatusCodes.StatusCodes.NOT_FOUND).json({message: "FormUserProgress not found"})
+        return};
+    res.status(StatusCodes.StatusCodes.OK).json({formuserprogress});
+});
+
+router.get('/getbyuserid/:id', async(req, res, next) => {
+  const id = req.params.id;
+    const formuserprogress = await FormUserProgress.findOne({where: {idUser: id}});
     if(formuserprogress == null) {
         res.status(StatusCodes.StatusCodes.NOT_FOUND).json({message: "FormUserProgress not found"})
         return};
