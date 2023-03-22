@@ -1,7 +1,7 @@
 require('dotenv').config()
 var express = require('express');
 const StatusCodes = require('http-status-codes');
-const { Sequelize, Model, DataTypes, TimeoutError } = require("sequelize");
+const { Sequelize } = require("sequelize");
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, 
   {
   dialect: 'mysql'
@@ -74,8 +74,13 @@ router.post('/create', async(req,res,next) => {
      res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
      return
    }
-   const createdExercice = await create(req.body.Exercice)
-   res.status(StatusCodes.StatusCodes.CREATED).json({createdExercice, message: "Exercice created"})
+   try{
+    const createdExercice = await Exercice.create(req.body.Exercice)
+    res.status(StatusCodes.StatusCodes.CREATED).json({createdExercice, message: "Exercice created"})
+   } catch (error) {
+     console.log(error)
+     res.status(StatusCodes.StatusCodes.INTERNAL_SERVER_ERROR).json({message: "Internal server error"})
+   }
 });
 
 module.exports = router;

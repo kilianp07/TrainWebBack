@@ -1,7 +1,7 @@
 require('dotenv').config()
 var express = require('express');
 const StatusCodes = require('http-status-codes');
-const { Sequelize, Model, DataTypes, TimeoutError } = require("sequelize");
+const { Sequelize } = require("sequelize");
 const ChapitreDTO = require('../dto/ChapitreDTO');
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, 
   {
@@ -10,13 +10,6 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
 )
 const Chapitre = require('../models/chapitre')(sequelize, Sequelize.DataTypes,Sequelize.Model);
 var router = express.Router();
-
-const create = async (chapter) => {
-  try {
-  } catch (error) {
-  console.log(error)
-  }
-};
 
 router.get('/getbyid/:id', async(req, res, next) => {
   const id = req.params.id;
@@ -74,12 +67,16 @@ router.post('/create', async(req,res,next) => {
      res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
      return
    }
-   const createdChapitre = await create(req.body.Chapitre)
-   res.status(StatusCodes.StatusCodes.CREATED).json({createdChapitre, message: "Chapter created"})
+   try{
+    const createdChapitre = await Chapitre.create(req.body.Chapitre)
+    res.status(StatusCodes.StatusCodes.CREATED).json({createdChapitre, message: "Chapter created"})
+   } catch (err) {
+     res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Chapter not created"})
+   }
 });
 
 
-router.get('/getallwithexercices', async(req, res, next) => {
+router.get('/getallwithexercices', async(res) => {
   const chapitres = await Chapitre.findAll({where : isDeleted = false});
   if(chapitres.length == 0) {
     res.status(StatusCodes.StatusCodes.NOT_FOUND).json({message: "No chapters found"})

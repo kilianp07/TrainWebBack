@@ -3,7 +3,7 @@ var express = require('express');
 const StatusCodes = require('http-status-codes');
 const checkToken = require('../middleware/checkJWT')
 const bcrypt = require("bcrypt");
-const { Sequelize, Model, DataTypes, TimeoutError } = require("sequelize");
+const { Sequelize } = require("sequelize");
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD,
   {
   dialect: 'mysql'
@@ -155,7 +155,7 @@ router.post('/login', async(req,res,next) => {
   res.status(StatusCodes.StatusCodes.OK).json({createdToken, message: "User logged in"})
 });
 
-router.put('/update', async(req,res,next) => {
+router.put('/update', checkToken, async(req,res,next) => {
 
   const incomingUser = req.body.user
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
@@ -193,18 +193,8 @@ router.put('/update', async(req,res,next) => {
   res.status(StatusCodes.StatusCodes.OK).json({user: await updatedUser, message: "User updated"})
 });
 
-router.post('/logout', async(req,res,next) => {
+router.post('/logout', checkToken, async(req,res,next) => {
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if(!incomingToken){
-    res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing token"})
-    return
-  }
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
 
   try{
     await Token.deprecate(incomingToken)
