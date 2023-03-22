@@ -46,7 +46,7 @@ router.get('/get', async(req,res,next) => {
 
   let user
   try{
-    user = User.findOne({ where: { id: token.idUser } })
+    user = await User.findOne({ where: { id: token.idUser } })
   }catch(err){
     res.status(StatusCodes.StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message})
     return
