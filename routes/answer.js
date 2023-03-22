@@ -21,17 +21,6 @@ const create = async (answer) => {
 };
 
 router.get('/getbyid/:id', async(req, res, next) => {
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
   const id = req.params.id;
   const answer = await Answer.findOne({where: {id: id}});
   if(answer == null) {
@@ -41,17 +30,6 @@ router.get('/getbyid/:id', async(req, res, next) => {
 });
 
 router.get('/getall', async(req, res, next) => {
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
   const answers = await Answer.findAll({where : {isDeleted: false}});
   if(answers.length == 0) {
     res.status(StatusCodes.StatusCodes.NOT_FOUND).json({message: "No answers found"})
@@ -61,17 +39,6 @@ router.get('/getall', async(req, res, next) => {
 
 
 router.post('/create', async(req,res,next) => {
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
   if (Answer.incomingCorrectlyFilled(req.body.Answer) == false) {
        res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
        return
@@ -81,17 +48,6 @@ router.post('/create', async(req,res,next) => {
 });
 
 router.delete('/delete/:id', async(req, res, next) => {
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
   const id = req.params.id;
     const answer = await Answer.findOne({where: {id: id}});
     if(answer == null) {
@@ -106,17 +62,6 @@ router.delete('/delete/:id', async(req, res, next) => {
 });
   
 router.delete('/harddelete/:id', async(req, res, next) => {
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
   const id = req.params.id;
     const answer = await Answer.findOne({where: {id: id}});
     if(answer == null) {
@@ -128,17 +73,6 @@ router.delete('/harddelete/:id', async(req, res, next) => {
 
 
 router.put('/update/:id', async(req, res, next) => {
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
   const id = req.params.id;
   const answer = await Answer.findOne({where: {id: id}});
   if(answer == null) {

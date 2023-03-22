@@ -16,21 +16,7 @@ sequelize.authenticate()
 
 router.put('/update', async function(req, res, next) {
     incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-    if(!incomingToken){
-        res.status(StatusCodes.StatusCodes.UNAUTHORIZED).json({message: "Token must be filled"})
-        return
-    }
-
-    if(!await Token.tokenExists(incomingToken)) {
-        res.status(StatusCodes.StatusCodes.UNAUTHORIZED).json({message: "You must be connected"})
-        return
-    }
-
-    if(!await Token.verify(incomingToken)) {
-        res.status(StatusCodes.StatusCodes.UNAUTHORIZED).json({message: "Token is not valid"})
-        return
-    }
-
+    
     Token.deprecate(incomingToken)
     // find which user is associated with the token
     const token = await Token.findOne({where: {token : incomingToken}})
