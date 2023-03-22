@@ -8,6 +8,7 @@ var cors = require('cors')
 const Sentry = require('@sentry/node');
 const Tracing = require("@sentry/tracing");
 const checkToken = require('./middleware/checkJWT')
+const checkToken = require('./middleware/checkJWT')
 
 
 Sentry.init({
