@@ -82,7 +82,7 @@ router.delete('/harddelete/:id', async(req, res, next) => {
 });
 
 router.post('/create', async(req, res, next) => {
-  if(!FormUserProgress.incomingCorrectlyFilled(req.body.form_user_progress)){
+  if(!FormUserProgress.incomingCorrectlyFilled(req.body.FormUserProgress)){
         res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "FormUserProgress not correctly filled"});
         return;
     }
