@@ -1,8 +1,9 @@
 require('dotenv').config()
 var express = require('express');
 const StatusCodes = require('http-status-codes');
+const checkToken = require('../middleware/checkJWT')
 const bcrypt = require("bcrypt");
-const { Sequelize, Model, DataTypes, TimeoutError } = require("sequelize");
+const { Sequelize } = require("sequelize");
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD,
   {
   dialect: 'mysql'
@@ -15,28 +16,10 @@ const Token = require('../models/token')(sequelize, Sequelize.DataTypes,Sequeliz
 var router = express.Router();
 sequelize.authenticate()
 
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
 
-router.get('/get', async(req,res,next) => {
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+router.get('/get', checkToken, async(req,res) => {
+  const incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
-  if(!incomingToken){
-    res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing token"})
-    return
-  }
-  
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
-  
   // If user related to token doesn't exists
   const token = await Token.findOne({ where: { token: incomingToken } })
   if (!await User.userExists(token.idUser, "id")) {
@@ -56,7 +39,7 @@ router.get('/get', async(req,res,next) => {
 });
 
 
-router.post('/student/create', async(req,res,next) => {
+router.post('/student/create', async(req,res) => {
    const salt = await bcrypt.genSalt(10);
    const incomingUser = req.body.user
 
@@ -88,7 +71,7 @@ router.post('/student/create', async(req,res,next) => {
     res.status(StatusCodes.StatusCodes.CREATED).json({createdUser, message: "User created"})
 });
 
-router.post('/teacher/create', async(req,res,next) => {
+router.post('/teacher/create', async(req,res) => {
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
   if(!await Token.tokenExists(incomingToken)) {
@@ -144,7 +127,7 @@ router.post('/teacher/create', async(req,res,next) => {
     res.status(StatusCodes.StatusCodes.CREATED).json({createdUser, message: "User created"})
 });
 
-router.post('/login', async(req,res,next) => {
+router.post('/login', async(req,res) => {
   const incomingUser = req.body.user
   
   if(!await User.userExists(incomingUser.email, "email")) {
@@ -172,7 +155,7 @@ router.post('/login', async(req,res,next) => {
   res.status(StatusCodes.StatusCodes.OK).json({createdToken, message: "User logged in"})
 });
 
-router.put('/update', async(req,res,next) => {
+router.put('/update', checkToken, async(req,res) => {
 
   const incomingUser = req.body.user
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
@@ -210,18 +193,8 @@ router.put('/update', async(req,res,next) => {
   res.status(StatusCodes.StatusCodes.OK).json({user: await updatedUser, message: "User updated"})
 });
 
-router.post('/logout', async(req,res,next) => {
+router.post('/logout', checkToken, async(req,res) => {
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if(!incomingToken){
-    res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing token"})
-    return
-  }
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
 
   try{
     await Token.deprecate(incomingToken)

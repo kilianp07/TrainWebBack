@@ -1,38 +1,17 @@
 require('dotenv').config()
 var express = require('express');
 const StatusCodes = require('http-status-codes');
-const { Sequelize, Model, DataTypes, TimeoutError } = require("sequelize");
+const { Sequelize } = require("sequelize");
+const checkToken = require('../middleware/checkJWT');
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, 
   {
   dialect: 'mysql'
   }
 )
 const Formation = require('../models/formation')(sequelize, Sequelize.DataTypes,Sequelize.Model);
-const Token = require('../models/token')(sequelize, Sequelize.DataTypes,Sequelize.Model);
 var router = express.Router();
 
-const create = async (frm) => {
-  try {
-  const createdFormation = await Formation.create(frm)
-  } catch (error) {
-  console.log(error)
-  }
-};
-
-router.get('/getbyid/:id', async(req, res, next) => {
-
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
-
+router.get('/getbyid/:id', checkToken, async(req, res) => {
   const id = req.params.id;
   const formation = await Formation.findOne({where: {id: id}});
   if(formation == null) {
@@ -42,20 +21,7 @@ router.get('/getbyid/:id', async(req, res, next) => {
 });
 
 
-router.get('/getall', async(req, res, next) => {
-
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
-
+router.get('/getall', checkToken, async(res) => {
     const formations = await Formation.findAll();
     if (formations.length == 0) {
       res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "No formations exist."})
@@ -65,41 +31,20 @@ router.get('/getall', async(req, res, next) => {
     res.status(StatusCodes.StatusCodes.OK).json(formations)
 });
 
-router.post('/create', async(req,res,next) => {
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
-
+router.post('/create', checkToken, async(req,res) => {
   if (Formation.incomingCorrectlyFilled(req.body.Formation) == false) {
      res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
      return
    }
-   const createdFormation = await create(req.body.Formation)
-   res.status(StatusCodes.StatusCodes.CREATED).json({createdFormation, message: "Formation created"})
+   try{
+    const createdFormation = await Formation.create(req.body.Formation)
+    res.status(StatusCodes.StatusCodes.CREATED).json({createdFormation, message: "Formation created"})
+   } catch (error) {
+      res.status(StatusCodes.StatusCodes.INTERNAL_SERVER_ERROR).json({message: error.message})
+    }
 });
 
-router.delete('/delete/:id', async(req, res, next) => {
-
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
-
+router.delete('/delete/:id', checkToken, async(req, res) => {
   const id = req.params.id;
   const formation = await Formation.findOne({where: {id: id}});
   if(formation == null) {
@@ -113,20 +58,7 @@ router.delete('/delete/:id', async(req, res, next) => {
   res.status(StatusCodes.StatusCodes.OK).json({message: "Formation deleted"});
 });
 
-router.delete('/harddelete/:id', async(req, res, next) => {
- 
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
-
+router.delete('/harddelete/:id', checkToken, async(req, res) => {
   const id = req.params.id;
   const formation = await Formation.findOne({where: {id: id}});
   if(formation == null) {
@@ -137,20 +69,7 @@ router.delete('/harddelete/:id', async(req, res, next) => {
 });
 
 
-router.put('/update/:id', async(req, res, next) => {
-  
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
-
+router.put('/update/:id', checkToken, async(req, res) => {
   const id = req.params.id;
   const formation = await Formation.findOne({where: {id: id}});
   if(formation == null) {

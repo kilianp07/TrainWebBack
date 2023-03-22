@@ -1,8 +1,9 @@
 require('dotenv').config()
 var express = require('express');
 const StatusCodes = require('http-status-codes');
-const { Sequelize, Model, DataTypes, TimeoutError } = require("sequelize");
+const { Sequelize } = require("sequelize");
 const ChapitreDTO = require('../dto/ChapitreDTO');
+const checkToken = require('../middleware/checkJWT');
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, 
   {
   dialect: 'mysql'
@@ -11,25 +12,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
 const Chapitre = require('../models/chapitre')(sequelize, Sequelize.DataTypes,Sequelize.Model);
 var router = express.Router();
 
-const create = async (chapter) => {
-  try {
-  } catch (error) {
-  console.log(error)
-  }
-};
-
-router.get('/getbyid/:id', async(req, res, next) => {
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
+router.get('/getbyid/:id', checkToken, async(req, res) => {
   const id = req.params.id;
   const chapitre = await Chapitre.findOne({where: {id: id}});
   if(chapitre == null) {
@@ -38,18 +21,7 @@ router.get('/getbyid/:id', async(req, res, next) => {
   res.status(StatusCodes.StatusCodes.OK).json({chapitre});
 });
 
-router.get('/getall', async(req, res, next) => {
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
+router.get('/getall', checkToken, async(res) => {
   const chapitres = await Chapitre.findAll({where : isDeleted = false});
   if(chapitres.length == 0) {
     res.status(StatusCodes.StatusCodes.NOT_FOUND).json({message: "No chapters found"})
@@ -57,18 +29,7 @@ router.get('/getall', async(req, res, next) => {
   res.status(StatusCodes.StatusCodes.OK).json({chapitres});
 });
 
-router.put('/update/:id', async(req, res, next) => {
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
+router.put('/update/:id', checkToken, async(req, res) => {
   const id = req.params.id;
   const chapitre = await Chapitre.findOne({where: {id: id}});
   if(chapitre == null) {
@@ -78,18 +39,7 @@ router.put('/update/:id', async(req, res, next) => {
   res.status(StatusCodes.StatusCodes.OK).json({message: "Chapter updated"});
 });
 
-router.delete('/delete/:id', async(req, res, next) => {
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
+router.delete('/delete/:id', checkToken, async(req, res) => {
   const id = req.params.id;
   const chapitre = await Chapitre.findOne({where: {id: id}});
   if(chapitre == null) {
@@ -103,18 +53,7 @@ router.delete('/delete/:id', async(req, res, next) => {
   res.status(StatusCodes.StatusCodes.OK).json({message: "Chapter deleted"});
 });
 
-router.delete('/harddelete/:id', async(req, res, next) => {
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
+router.delete('/harddelete/:id', checkToken, async(req, res) => {
   const id = req.params.id;
   const chapitre = await Chapitre.findOne({where: {id: id}});
   if(chapitre == null) {
@@ -124,28 +63,21 @@ router.delete('/harddelete/:id', async(req, res, next) => {
   res.status(StatusCodes.StatusCodes.OK).json({message: "Chapter deleted"});
 });
 
-router.post('/create', async(req,res,next) => {
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
+router.post('/create', checkToken, async(req,res) => {
   if (Chapitre.incomingCorrectlyFilled(req.body.Chapitre) == false) {
      res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
      return
    }
-   const createdChapitre = await create(req.body.Chapitre)
-   res.status(StatusCodes.StatusCodes.CREATED).json({createdChapitre, message: "Chapter created"})
+   try{
+    const createdChapitre = await Chapitre.create(req.body.Chapitre)
+    res.status(StatusCodes.StatusCodes.CREATED).json({createdChapitre, message: "Chapter created"})
+   } catch (err) {
+     res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Chapter not created"})
+   }
 });
 
 
-router.get('/getallwithexercices', async(req, res, next) => {
+router.get('/getallwithexercices', checkToken, async(res) => {
   const chapitres = await Chapitre.findAll({where : isDeleted = false});
   if(chapitres.length == 0) {
     res.status(StatusCodes.StatusCodes.NOT_FOUND).json({message: "No chapters found"})

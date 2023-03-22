@@ -7,6 +7,7 @@ var rateLimit = require ('express-rate-limit')
 var cors = require('cors')
 const Sentry = require('@sentry/node');
 const Tracing = require("@sentry/tracing");
+const checkToken = require('./middleware/checkJWT')
 
 
 Sentry.init({
@@ -68,23 +69,23 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter, limiter, cors());
 app.use('/users', usersRouter, limiter, cors());
-app.use("/formations", formationsRouter, limiter, cors());
-app.use("/chapitres", chapitreRouter, limiter, cors());
-app.use("/exercices", exerciceRouter, limiter, cors());
-app.use("/answers", answerRouter, limiter, cors());
+app.use("/formations", formationsRouter, limiter, checkToken, cors());
+app.use("/chapitres", chapitreRouter, limiter, checkToken, cors());
+app.use("/exercices", exerciceRouter, limiter, checkToken,cors());
+app.use("/answers", answerRouter, limiter, checkToken, cors());
 app.use("/logs", logsRouter, limiter, cors());
-app.use("/roles", roleRouter, limiter, cors());
-app.use("/formuserprogress", formUserProgressRouter, limiter, cors());
-app.use("/tokens", tokenRouter, limiter, cors());
+app.use("/roles", roleRouter, limiter, checkToken, cors());
+app.use("/formuserprogress", formUserProgressRouter, limiter, checkToken, cors());
+app.use("/tokens", tokenRouter, limiter, checkToken, cors());
 
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function(next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
