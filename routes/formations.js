@@ -20,19 +20,6 @@ const create = async (frm) => {
 };
 
 router.get('/getbyid/:id', async(req, res, next) => {
-
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
-
   const id = req.params.id;
   const formation = await Formation.findOne({where: {id: id}});
   if(formation == null) {
@@ -43,19 +30,6 @@ router.get('/getbyid/:id', async(req, res, next) => {
 
 
 router.get('/getall', async(req, res, next) => {
-
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
-
     const formations = await Formation.findAll();
     if (formations.length == 0) {
       res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "No formations exist."})
@@ -66,18 +40,6 @@ router.get('/getall', async(req, res, next) => {
 });
 
 router.post('/create', async(req,res,next) => {
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
-
   if (Formation.incomingCorrectlyFilled(req.body.Formation) == false) {
      res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
      return
@@ -87,19 +49,6 @@ router.post('/create', async(req,res,next) => {
 });
 
 router.delete('/delete/:id', async(req, res, next) => {
-
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
-
   const id = req.params.id;
   const formation = await Formation.findOne({where: {id: id}});
   if(formation == null) {
@@ -114,19 +63,6 @@ router.delete('/delete/:id', async(req, res, next) => {
 });
 
 router.delete('/harddelete/:id', async(req, res, next) => {
- 
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
-
   const id = req.params.id;
   const formation = await Formation.findOne({where: {id: id}});
   if(formation == null) {
@@ -138,19 +74,6 @@ router.delete('/harddelete/:id', async(req, res, next) => {
 
 
 router.put('/update/:id', async(req, res, next) => {
-  
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
-
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
-
   const id = req.params.id;
   const formation = await Formation.findOne({where: {id: id}});
   if(formation == null) {

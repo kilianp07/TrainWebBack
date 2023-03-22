@@ -1,6 +1,7 @@
 require('dotenv').config()
 var express = require('express');
 const StatusCodes = require('http-status-codes');
+const checkToken = require('../middleware/checkJWT')
 const bcrypt = require("bcrypt");
 const { Sequelize, Model, DataTypes, TimeoutError } = require("sequelize");
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD,
@@ -15,28 +16,10 @@ const Token = require('../models/token')(sequelize, Sequelize.DataTypes,Sequeliz
 var router = express.Router();
 sequelize.authenticate()
 
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
 
-router.get('/get', async(req,res,next) => {
-  incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
+router.get('/get', checkToken, async(req,res,next) => {
+  const incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
-  if(!incomingToken){
-    res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing token"})
-    return
-  }
-  
-  if (!await Token.tokenExists(incomingToken)) {
-    res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "Token not found"})
-    return
-  }
-
-  if(!await Token.verify(incomingToken)){
-    res.status(StatusCodes.StatusCodes.FORBIDDEN).json({message: "Invalid token"})
-    return
-  }
-  
   // If user related to token doesn't exists
   const token = await Token.findOne({ where: { token: incomingToken } })
   if (!await User.userExists(token.idUser, "id")) {
