@@ -36,7 +36,7 @@ router.put('/update/:id', async(req, res, next) => {
     if(formuserprogress.isDeleted == true) {
         res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "FormUserProgress already deleted"})
         return};
-    await FormUserProgress.update(req.body.FormUserProgress, {where: {id: id}});
+    await FormUserProgress.update(req.body.form_user_progress, {where: {id: id}});
     res.status(StatusCodes.StatusCodes.OK).json({message: "FormUserProgress updated"});
 });
 
@@ -64,11 +64,11 @@ router.delete('/harddelete/:id', async(req, res, next) => {
 });
 
 router.post('/create', async(req, res, next) => {
-  if(!FormUserProgress.incomingCorrectlyFilled(req.body.FormUserProgress)){
+  if(!FormUserProgress.incomingCorrectlyFilled(req.body.form_user_progress)){
         res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "FormUserProgress not correctly filled"});
         return;
     }
-    const formuserprogress = await FormUserProgress.create(req.body.FormUserProgress);
+    const formuserprogress = await FormUserProgress.create(req.body.form_user_progress);
     res.status(StatusCodes.StatusCodes.OK).json({formuserprogress});
 });
 
