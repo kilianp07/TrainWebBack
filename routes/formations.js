@@ -2,6 +2,7 @@ require('dotenv').config()
 var express = require('express');
 const StatusCodes = require('http-status-codes');
 const { Sequelize } = require("sequelize");
+const checkToken = require('../middleware/checkJWT');
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, 
   {
   dialect: 'mysql'
@@ -10,7 +11,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
 const Formation = require('../models/formation')(sequelize, Sequelize.DataTypes,Sequelize.Model);
 var router = express.Router();
 
-router.get('/getbyid/:id', async(req, res, next) => {
+router.get('/getbyid/:id', checkToken, async(req, res) => {
   const id = req.params.id;
   const formation = await Formation.findOne({where: {id: id}});
   if(formation == null) {
@@ -20,7 +21,7 @@ router.get('/getbyid/:id', async(req, res, next) => {
 });
 
 
-router.get('/getall', async(req, res, next) => {
+router.get('/getall', checkToken, async(res) => {
     const formations = await Formation.findAll();
     if (formations.length == 0) {
       res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "No formations exist."})
@@ -30,7 +31,7 @@ router.get('/getall', async(req, res, next) => {
     res.status(StatusCodes.StatusCodes.OK).json(formations)
 });
 
-router.post('/create', async(req,res,next) => {
+router.post('/create', checkToken, async(req,res) => {
   if (Formation.incomingCorrectlyFilled(req.body.Formation) == false) {
      res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
      return
@@ -43,7 +44,7 @@ router.post('/create', async(req,res,next) => {
     }
 });
 
-router.delete('/delete/:id', async(req, res, next) => {
+router.delete('/delete/:id', checkToken, async(req, res) => {
   const id = req.params.id;
   const formation = await Formation.findOne({where: {id: id}});
   if(formation == null) {
@@ -57,7 +58,7 @@ router.delete('/delete/:id', async(req, res, next) => {
   res.status(StatusCodes.StatusCodes.OK).json({message: "Formation deleted"});
 });
 
-router.delete('/harddelete/:id', async(req, res, next) => {
+router.delete('/harddelete/:id', checkToken, async(req, res) => {
   const id = req.params.id;
   const formation = await Formation.findOne({where: {id: id}});
   if(formation == null) {
@@ -68,7 +69,7 @@ router.delete('/harddelete/:id', async(req, res, next) => {
 });
 
 
-router.put('/update/:id', async(req, res, next) => {
+router.put('/update/:id', checkToken, async(req, res) => {
   const id = req.params.id;
   const formation = await Formation.findOne({where: {id: id}});
   if(formation == null) {

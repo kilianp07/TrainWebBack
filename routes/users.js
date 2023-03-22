@@ -17,7 +17,7 @@ var router = express.Router();
 sequelize.authenticate()
 
 
-router.get('/get', checkToken, async(req,res,next) => {
+router.get('/get', checkToken, async(req,res) => {
   const incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
   // If user related to token doesn't exists
@@ -39,7 +39,7 @@ router.get('/get', checkToken, async(req,res,next) => {
 });
 
 
-router.post('/student/create', async(req,res,next) => {
+router.post('/student/create', async(req,res) => {
    const salt = await bcrypt.genSalt(10);
    const incomingUser = req.body.user
 
@@ -71,7 +71,7 @@ router.post('/student/create', async(req,res,next) => {
     res.status(StatusCodes.StatusCodes.CREATED).json({createdUser, message: "User created"})
 });
 
-router.post('/teacher/create', async(req,res,next) => {
+router.post('/teacher/create', async(req,res) => {
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
   if(!await Token.tokenExists(incomingToken)) {
@@ -127,7 +127,7 @@ router.post('/teacher/create', async(req,res,next) => {
     res.status(StatusCodes.StatusCodes.CREATED).json({createdUser, message: "User created"})
 });
 
-router.post('/login', async(req,res,next) => {
+router.post('/login', async(req,res) => {
   const incomingUser = req.body.user
   
   if(!await User.userExists(incomingUser.email, "email")) {
@@ -155,7 +155,7 @@ router.post('/login', async(req,res,next) => {
   res.status(StatusCodes.StatusCodes.OK).json({createdToken, message: "User logged in"})
 });
 
-router.put('/update', checkToken, async(req,res,next) => {
+router.put('/update', checkToken, async(req,res) => {
 
   const incomingUser = req.body.user
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
@@ -193,7 +193,7 @@ router.put('/update', checkToken, async(req,res,next) => {
   res.status(StatusCodes.StatusCodes.OK).json({user: await updatedUser, message: "User updated"})
 });
 
-router.post('/logout', checkToken, async(req,res,next) => {
+router.post('/logout', checkToken, async(req,res) => {
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
   try{
