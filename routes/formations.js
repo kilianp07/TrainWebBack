@@ -21,14 +21,17 @@ router.get('/getbyid/:id', checkToken, async(req, res) => {
 });
 
 
-router.get('/getall', checkToken, async(res) => {
-    const formations = await Formation.findAll();
-    if (formations.length == 0) {
-      res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "No formations exist."})
-      return;
+router.get('/getall', async(req, res) => {
+    try{
+      let formations = await Formation.findAll();
+      if (formations.length == 0) {
+        res.status(StatusCodes.StatusCodes.NO_CONTENT).json({message: "No formations exist."})
+        return;
+      }
+      res.status(StatusCodes.StatusCodes.OK).json(formations)
+    }catch(err){
+      res.status(StatusCodes.StatusCodes.INTERNAL_SERVER_ERROR).json({message: "Unable to get Formations"})
     }
-
-    res.status(StatusCodes.StatusCodes.OK).json(formations)
 });
 
 router.post('/create', checkToken, async(req,res) => {

@@ -28,7 +28,7 @@ router.get('/getbyid/:id', checkToken, async(req, res) => {
   res.status(StatusCodes.StatusCodes.OK).json({exercice});
 });
 
-router.get('/getall', checkToken, async(res) => {
+router.get('/getall', checkToken, async(req, res) => {
   const exercices = await Exercice.findAll({where : isDeleted = false});
   if(exercices.length == 0) {
     res.status(StatusCodes.StatusCodes.NOT_FOUND).json({message: "No exercices found"})
