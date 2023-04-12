@@ -8,6 +8,7 @@ var cors = require('cors')
 const Sentry = require('@sentry/node');
 const Tracing = require("@sentry/tracing");
 const checkToken = require('./middleware/checkJWT')
+const checkToken = require('./middleware/checkJWT')
 
 
 Sentry.init({
@@ -44,6 +45,7 @@ var logsRouter = require('./routes/logs');
 var roleRouter = require('./routes/roles');
 var formUserProgressRouter = require('./routes/formuserprogress');
 var tokenRouter = require('./routes/token');
+var refreshTokenRouter = require('./routes/refreshToken');
 
 var app = express();
 
@@ -77,6 +79,7 @@ app.use("/logs", logsRouter, limiter, cors());
 app.use("/roles", roleRouter, limiter, checkToken, cors());
 app.use("/formuserprogress", formUserProgressRouter, limiter, checkToken, cors());
 app.use("/tokens", tokenRouter, limiter, checkToken, cors());
+app.use("/refresh", refreshTokenRouter, limiter, cors());
 
 
 // catch 404 and forward to error handler
