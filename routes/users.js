@@ -81,7 +81,7 @@ router.post('/teacher/create', async(req,res) => {
     return
   }
 
-  if(!await Token.verifyToken(incomingToken)) {
+  if(!await Token.verify(incomingToken)) {
     res.status(StatusCodes.StatusCodes.UNAUTHORIZED).json({message: "You must be connected"})
     return
   }
