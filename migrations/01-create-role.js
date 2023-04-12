@@ -27,6 +27,19 @@ module.exports = {
         defaultValue: false
       }
     });
+    return queryInterface.bulkInsert('roles', [{
+      value: 'STUDENT',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }, {
+      value: 'TEACHER',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }, {
+      value: 'ADMIN',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }]);
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Roles');
