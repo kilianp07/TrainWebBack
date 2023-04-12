@@ -22,7 +22,7 @@ router.get('/getbyid/:id', checkToken, async(req, res) => {
   res.status(StatusCodes.StatusCodes.OK).json({chapitre});
 });
 
-router.get('/getall', checkToken, async(res) => {
+router.get('/getall', checkToken, async(req, res) => {
   const chapitres = await Chapitre.findAll({where : isDeleted = false});
   if(chapitres.length == 0) {
     res.status(StatusCodes.StatusCodes.NOT_FOUND).json({message: "No chapters found"})

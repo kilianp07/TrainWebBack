@@ -87,7 +87,7 @@ router.post('/create', async(req, res, next) => {
         res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "FormUserProgress not correctly filled"});
         return;
     }
-    const formuserprogress = await FormUserProgress.create(req.body.form_user_progress);
+    const formuserprogress = await FormUserProgress.create(req.body.FormUserProgress);
     res.status(StatusCodes.StatusCodes.OK).json({formuserprogress});
 });
 
