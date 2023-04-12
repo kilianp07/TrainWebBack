@@ -60,12 +60,17 @@ router.get('/get', async(req,res,next) => {
 router.post('/student/create', async(req,res,next) => {
    const salt = await bcrypt.genSalt(10);
    const incomingUser = req.body.user
-
-   // Check if all parameters are filled
-   if (!User.incomingCorrectlyFilled(incomingUser)) {
-      res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
-      return
-    }
+  //  console.log("testtttttttttt")
+  //  const roleStudent = await Role.findOne({ where: { value: 'STUDENT' } })
+  //  console.log(roleStudent, "sudhqouh");
+  //  console.log(incomingUser, "incoming");
+  //  incomingUser.role = roleStudent.id;
+  //  console.log("reach");
+  //  // Check if all parameters are filled
+  //  if (!User.incomingCorrectlyFilled(incomingUser)) {
+  //     res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
+  //     return
+  //   }
   
     // Check if user already exists
     if (await User.userExists(incomingUser.email, "email")) {
