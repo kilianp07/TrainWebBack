@@ -8,8 +8,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   dialect: 'mysql'
   }
 )
-const Token = require('../models/token')(sequelize, Sequelize.DataTypes,Sequelize.Model);
-
+const RefreshToken = require('../models/refreshToken')(sequelize, Sequelize.DataTypes,Sequelize.Model);
 
 var router = express.Router();
 sequelize.authenticate()
@@ -21,20 +20,20 @@ router.put('/update', async function(req, res, next) {
         return
     }
 
-    if(!await Token.tokenExists(incomingToken)) {
+    if(!await RefreshToken.tokenExists(incomingToken)) {
         res.status(StatusCodes.StatusCodes.UNAUTHORIZED).json({message: "You must be connected"})
         return
     }
 
-    if(!await Token.verify(incomingToken)) {
+    if(!await RefreshToken.verify(incomingToken)) {
         res.status(StatusCodes.StatusCodes.UNAUTHORIZED).json({message: "Token is not valid"})
         return
     }
 
-    // Deprecate the refresh token
-    Token.deprecate(incomingToken)
-    const token = await Token.findOne({where: {token : incomingToken}})
-    generatedToken = await Token.generate(token.idUser)
+    RefreshToken.deprecate(incomingToken)
+    // find which user is associated with the token
+    const token = await RefreshToken.findOne({where: {token : incomingToken}})
+    generatedToken = await RefreshToken.refresh(incomingToken)
     res.status(StatusCodes.StatusCodes.OK).json({token: generatedToken, message: "Token updated"})
 
 });
