@@ -25,10 +25,14 @@ module.exports = {
         allowNull: false,
         type: Sequelize.BOOLEAN
       },
-      Role:
+      idRole:
       {
         allowNull : false,
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Roles',
+          key: 'id'
+        }
       },
       createdAt: {
         allowNull: false,
