@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       models.User.hasMany(models.FormUserProgress)
       models.User.hasMany(models.Exercice)
       models.User.hasMany(models.Answer)
+      models.User.BelongsTo(models.Role)
     }
   }
   User.init({
@@ -25,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     password: DataTypes.STRING,
     username: DataTypes.STRING,
     emailVerified: DataTypes.BOOLEAN,
-    role: DataTypes.STRING,
+    idRole: DataTypes.INTEGER,
     isDeleted: DataTypes.BOOLEAN
   }, {
     sequelize,
@@ -78,7 +79,7 @@ module.exports = (sequelize, DataTypes) => {
     userToUpdate.email = incomingUser.email
     userToUpdate.username = incomingUser.username
     userToUpdate.password = await bcrypt.hash(incomingUser.password, salt)
-    userToUpdate.role = incomingUser.role
+    userToUpdate.idRole = incomingUser.idRole
     userToUpdate.save()
 
     return userToUpdate
