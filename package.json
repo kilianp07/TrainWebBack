@@ -21,7 +21,7 @@
     "pug": "~2.0.0",
     "jsonwebtoken": "^9.0.0",
     "morgan": "~1.10.0",
-    "mysql2": "^2.3.3",
+    "mysql2": "^3.0.0",
     "nodemon": "^2.0.22",
     "sequelize": "^6.28.0",
     "sequelize-cli": "^6.6.0"
