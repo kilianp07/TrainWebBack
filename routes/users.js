@@ -166,7 +166,7 @@ router.put('/update', checkToken, async(req,res) => {
   const incomingUser = req.body.user
   incomingToken = req.headers["authorization"]&& req.headers["authorization"].split(' ')[1]
 
-  if(!User.incomingCorrectlyFilled(incomingUser) && incomingUser.role == null) {
+  if(!User.incomingCorrectlyFilled(incomingUser) && incomingUser.idRole == null) {
     res.status(StatusCodes.StatusCodes.BAD_REQUEST).json({message: "Missing parameters"})
     return
   }
